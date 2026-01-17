@@ -1,89 +1,110 @@
 import React from "react";
+import {
+  BsInstagram,
+  BsFacebook,
+  BsYoutube,
+  BsTelegram, // Rasmdagi oxirgi icon Twitter emas, Telegramga o'xshash ekan
+} from "react-icons/bs";
+
+// Ustunlar uchun yordamchi komponent (Kod takrorlanmasligi uchun)
+const FooterColumn = ({ title, links }) => (
+  <div className="flex flex-col gap-4">
+    <h5 className="text-white font-bold text-[15px] mb-2">{title}</h5>
+    <ul className="flex flex-col gap-3">
+      {links.map((link) => (
+        <li key={link}>
+          <a
+            href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
+            className="text-slate-400 hover:text-white transition-colors duration-300 text-[14px] font-medium"
+          >
+            {link}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
 const Footer = () => {
   return (
-    <div>
-      <footer className="bg-[#1B3B5A] text-white px-6 md:px-16 py-16 mt-10">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-20">
-            {/* Footer Logo Section */}
-            <div className="col-span-2 md:col-span-1">
-              <h2 className="text-2xl font-bold mb-1">workify</h2>
-              <p className="text-slate-400 text-xs mb-8 font-medium">
-                Job posting platform
-              </p>
-              <button className="bg-white text-slate-800 px-10 py-2.5 rounded-lg font-bold text-sm hover:bg-gray-100 transition">
-                Contacts
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <h5 className="font-bold text-sm tracking-wide">General</h5>
-              <div className="flex flex-col gap-2.5 text-slate-400 text-sm">
-                <a href="#" className="hover:text-white transition">
-                  Sign up
-                </a>
-                <a href="#" className="hover:text-white transition">
-                  Contacts
-                </a>
-                <a href="#" className="hover:text-white transition">
-                  About
-                </a>
-                <a href="#" className="hover:text-white transition">
-                  FAQ
-                </a>
-                <a href="#" className="hover:text-white transition">
-                  Partners
-                </a>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <h5 className="font-bold text-sm tracking-wide">Company</h5>
-              <div className="flex flex-col gap-2.5 text-slate-400 text-sm">
-                <a href="#" className="hover:text-white transition">
-                  Post a job
-                </a>
-                <a href="#" className="hover:text-white transition">
-                  Search talents
-                </a>
-                <a href="#" className="hover:text-white transition">
-                  Company login
-                </a>
-                <a href="#" className="hover:text-white transition">
-                  Company advice
-                </a>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <h5 className="font-bold text-sm tracking-wide">Talents</h5>
-              <div className="flex flex-col gap-2.5 text-slate-400 text-sm">
-                <a href="#" className="hover:text-white transition">
-                  Search jobs
-                </a>
-                <a href="#" className="hover:text-white transition">
-                  Talent login
-                </a>
-                <a href="#" className="hover:text-white transition">
-                  Talent advice
-                </a>
-              </div>
-            </div>
+    <footer className="bg-[#1B3B5A] text-white pt-20 pb-10 px-6 md:px-16 lg:px-24">
+      <div className="max-w-[1440px] mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-20">
+          <div className="flex flex-col items-start lg:col-span-1">
+            <h2 className="text-[28px] font-bold tracking-tight mb-1">
+              workify
+            </h2>
+            <p className="text-slate-400 text-sm mb-8 font-medium">
+              Job posting platform
+            </p>
+            <button className="bg-white text-[#1B3B5A] px-10 py-3 rounded-xl font-bold text-[15px] hover:bg-slate-100 transition-all duration-300 shadow-md active:scale-95">
+              Contacts
+            </button>
           </div>
 
-          <div className="pt-8 border-t border-slate-700 flex flex-col md:row justify-between items-center gap-6">
-            <p className="text-slate-400 text-xs">All rights reserved 2021</p>
-            <div className="flex gap-6 items-center">
-              <span className="w-5 h-5 bg-slate-500 rounded-full cursor-pointer hover:bg-white transition opacity-60"></span>
-              <span className="w-5 h-5 bg-slate-500 rounded-full cursor-pointer hover:bg-white transition opacity-60"></span>
-              <span className="w-5 h-5 bg-slate-500 rounded-full cursor-pointer hover:bg-white transition opacity-60"></span>
-              <span className="w-5 h-5 bg-slate-500 rounded-full cursor-pointer hover:bg-white transition opacity-60"></span>
-            </div>
+          <div className="lg:ml-auto">
+            <FooterColumn
+              title="General"
+              links={["Sign up", "Contacts", "About", "FAQ", "Partners"]}
+            />
+          </div>
+
+          <div className="lg:ml-auto">
+            <FooterColumn
+              title="Company"
+              links={[
+                "Post a job",
+                "Search talents",
+                "Company login",
+                "Company advice",
+              ]}
+            />
+          </div>
+
+          <div className="lg:ml-auto">
+            <FooterColumn
+              title="Talents"
+              links={["Search jobs", "Talent login", "Talent advice"]}
+            />
+          </div>
+
+          <div className="hidden lg:block"></div>
+        </div>
+
+        <div className="pt-8 border-t border-slate-700/50 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-slate-400 text-[13px] font-medium order-2 md:order-1">
+            All rights reserved 2021
+          </p>
+
+          <div className="flex gap-5 items-center order-1 md:order-2">
+            <a
+              href="#"
+              className="text-white hover:text-slate-350 transition-transform hover:-translate-y-1"
+            >
+              <BsInstagram size={20} />
+            </a>
+            <a
+              href="#"
+              className="text-white hover:text-slate-350 transition-transform hover:-translate-y-1"
+            >
+              <BsFacebook size={20} />
+            </a>
+            <a
+              href="#"
+              className="text-white hover:text-slate-350 transition-transform hover:-translate-y-1"
+            >
+              <BsYoutube size={22} />
+            </a>
+            <a
+              href="#"
+              className="text-white hover:text-slate-350 transition-transform hover:-translate-y-1"
+            >
+              <BsTelegram size={20} />
+            </a>
           </div>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   );
 };
 
