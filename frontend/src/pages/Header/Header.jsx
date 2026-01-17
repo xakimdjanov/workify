@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FiUser, FiBriefcase, FiMenu, FiX } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -8,9 +9,11 @@ const Header = () => {
     <>
       <nav className="px-4 sm:px-6 md:px-16 py-4 bg-white border-b border-gray-100">
         <div className="flex items-center justify-between">
+          <Link to="/">
           <h1 className="text-2xl font-bold text-slate-800 cursor-pointer">
             workify
           </h1>
+          </Link>
 
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-500">
             <a className="flex items-center gap-2 hover:text-slate-900 transition">
@@ -22,9 +25,11 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            <Link to="/signin">
             <button className="hidden sm:block px-5 py-2 border rounded-lg font-semibold">
               Sign in
             </button>
+            </Link>
             <button className="hidden sm:block px-5 py-2 bg-[#1B3B5A] text-white rounded-lg font-semibold">
               Join Now
             </button>

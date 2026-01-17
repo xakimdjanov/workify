@@ -7,10 +7,13 @@ import {
 import { FiBriefcase } from "react-icons/fi";
 import { MdOutlineWorkOutline } from "react-icons/md";
 import heroImage from "../../assets/homeimg.png";
+import Header from "../../pages/Header/Header";
+import Footer from "../../pages/Footer/Footer";
 
 const TalantHome = () => {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-800 overflow-x-hidden">
+      <Header />
       {/* Hero Section */}
       <section className="relative px-4 sm:px-8 md:px-16 lg:px-24 py-10 md:py-20 flex flex-col lg:flex-row items-center max-w-[1440px] mx-auto gap-12">
         {/* Left text & search */}
@@ -117,6 +120,7 @@ const TalantHome = () => {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 };
