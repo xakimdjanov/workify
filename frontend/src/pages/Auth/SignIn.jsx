@@ -8,7 +8,7 @@ import Footer from "../Footer/Footer";
 import Header from "../Header/Header";
 
 // API bazaviy manzilini sozlash
-const API_BASE_URL =  "http://localhost:5000/api";
+const API_BASE_URL =  "https://workifybackend-production.up.railway.app/api";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
