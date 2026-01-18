@@ -20,7 +20,6 @@ export default function RegistrationFormStepThree() {
   const [showWorkplaceDropdown, setShowWorkplaceDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const workplaceTypes = ["Onsite", "Remote", "Hybrid"];
 
   useEffect(() => {
     const savedData = localStorage.getItem("talent_step3");
@@ -119,38 +118,41 @@ export default function RegistrationFormStepThree() {
           </div>
 
           <div className="space-y-6">
-            {/* Employment Type Selection */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-3">Employment type</label>
+{/* Employment Type Selection */}
+<div>
+  <label className="block text-gray-700 font-medium mb-3">Employment type</label>
 
-              <div className="relative bg-gray-100 rounded-[50px] border border-gray-200 grid grid-cols-2 md:grid-cols-4 gap-3 p-1 overflow-hidden">
-                {/* Animated Marker */}
-                <div
-                  className="absolute left-2 h-[60px] w-[calc(25%-0.25rem)] bg-white rounded-[50px] shadow-md transition-all duration-300"
-                  style={{
-                    transform: `translateX(${["fulltime", "parttime", "contract", "freelance"].indexOf(employmentType) * 100
-                      }%)`,
-                  }}
-                ></div>
+  <div className="relative bg-gray-100 rounded-[50px] border border-gray-200 grid grid-cols-4 p-1 overflow-hidden">
+    {/* Animated Marker */}
+    <div
+      className="absolute top-1 bottom-1 left-1 w-[calc(25%-0.5rem)] bg-white rounded-[50px] shadow-md transition-all duration-300"
+      style={{
+        transform: `translateX(${["fulltime", "parttime", "contract", "freelance"].indexOf(employmentType) * 100}%)`,
+      }}
+    ></div>
 
-                {[
-                  { id: "fulltime", label: "Full time", icon: <FaBriefcase /> },
-                  { id: "parttime", label: "Part time", icon: <FaClock /> },
-                  { id: "contract", label: "Contract", icon: <FaFileContract /> },
-                  { id: "freelance", label: "Freelance", icon: <FaUserTie /> },
-                ].map((type) => (
-                  <button
-                    key={type.id}
-                    type="button"
-                    onClick={() => setEmploymentType(type.id)}
-                    className={`flex items-center justify-center gap-2 px-4 py-3 relative z-10 font-medium transition-colors duration-200 ${employmentType === type.id ? "text-[#163D5C]" : "text-gray-400"
-                      }`}
-                  >
-                    {type.icon} <span className="text-sm md:text-base">{type.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+    {[
+      { id: "fulltime", label: "Full time", icon: <FaBriefcase /> },
+      { id: "parttime", label: "Part time", icon: <FaClock /> },
+      { id: "contract", label: "Contract", icon: <FaFileContract /> },
+      { id: "freelance", label: "Freelance", icon: <FaUserTie /> },
+    ].map((type) => (
+      <button
+        key={type.id}
+        type="button"
+        onClick={() => setEmploymentType(type.id)}
+        className={`flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 py-2 md:py-4 relative z-10 font-medium transition-all duration-200 ${
+          employmentType === type.id ? "text-[#163D5C]" : "text-gray-400"
+        }`}
+      >
+        <span className="text-sm md:text-lg">{type.icon}</span>
+        <span className="text-[10px] sm:text-xs md:text-base whitespace-nowrap">
+          {type.label}
+        </span>
+      </button>
+    ))}
+  </div>
+</div>
 
 
             {/* Workplace Type Toggle */}
