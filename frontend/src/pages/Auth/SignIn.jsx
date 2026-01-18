@@ -3,12 +3,9 @@ import { MdEmail } from "react-icons/md";
 import { IoMdLock } from "react-icons/io";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { talentApi } from "../../services/api"; 
 import Footer from "../Footer/Footer";
 import Header from "../Header/Header";
-
-// API bazaviy manzilini sozlash
-const API_BASE_URL =  "https://workifybackend-production.up.railway.app/api";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -28,13 +25,10 @@ const SignIn = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        `${API_BASE_URL}/talent/login`, 
-        formData,
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const res = await talentApi.login(formData);
 
-      const { token } = res.data;
+      const { token } = res.data; 
+      
       if (token) {
         localStorage.setItem("token", token);
         alert("Login muvaffaqiyatli!");
@@ -42,11 +36,7 @@ const SignIn = () => {
       }
     } catch (error) {
       const message = error.response?.data?.message || "Login yoki parol xato!";
-      if (error.response?.status === 404) {
-        alert("Serverdagi manzil topilmadi (404). Backend manzilini tekshiring.");
-      } else {
-        alert(message);
-      }
+      alert(message);
       console.error("Login Error:", error);
     } finally {
       setLoading(false);
@@ -81,7 +71,6 @@ const SignIn = () => {
             </div>
           </div>
 
-          {/* Password field */}
           <div className="mb-6">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
@@ -119,7 +108,7 @@ const SignIn = () => {
 
           <p className="text-center text-sm text-gray-600 mt-6">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-[#163D5C] font-bold hover:underline">
+            <Link to="/registration/step-1" className="text-[#163D5C] font-bold hover:underline">
               Register
             </Link>
           </p>
