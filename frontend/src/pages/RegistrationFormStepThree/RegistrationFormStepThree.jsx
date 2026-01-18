@@ -20,7 +20,6 @@ export default function RegistrationFormStepThree() {
   const [showWorkplaceDropdown, setShowWorkplaceDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const workplaceTypes = ["Onsite", "Remote", "Hybrid"];
 
   useEffect(() => {
     const savedData = localStorage.getItem("talent_step3");
