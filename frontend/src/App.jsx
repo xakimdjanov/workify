@@ -21,11 +21,12 @@ function App() {
       <Route path="/registration/step-3" element={<RegistrationFormStepThree />} />
 
       {/* Dashboard layout */}
-      <Route path="/dashboard" element={<MainLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="profile" element={<div>Profile page</div>} />
-        <Route path="settings" element={<div>Settings page</div>} />
-      </Route>
+<Route element={<MainLayout />}>
+  <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/profile" element={<div>Profile page</div>} />
+  <Route path="/settings" element={<div>Settings page</div>} />
+</Route>
+
     </Routes>
   );
 }

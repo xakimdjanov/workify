@@ -71,7 +71,7 @@ const TalantHome = () => {
         </div>
       </section>
 
-      <section className="px-4 sm:px-8 md:px-16 lg:px-24 py-16 md:py-28 bg-gray-50/40">
+      <section className="px-4 sm:px-16 md:px-8 lg:px-24 md:pt-[-10px] md:pb-16 bg-gray-50/40">
         <div
           className="
             grid
