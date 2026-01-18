@@ -1,9 +1,7 @@
 import RegistrationForm from "./pages/RegistrationPage/RegistrationPage";
 import RegistrationFormStepTwo from "./pages/RegistrationFormStepTwo/RegistrationFormStepTwo";
 import RegistrationFormStepThree from "./pages/RegistrationFormStepThree/RegistrationFormStepThree";
-// App.jsx
 import React from "react";
-import { Routes, Route } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import Header from "./pages/Header/Header";
 import Footer from "./pages/Footer/Footer";
@@ -13,7 +11,6 @@ import SignIn from "./pages/Auth/SignIn";
 function App() {
   return (
     <div>
-      <Header />
       <Routes>
         <Route path="/" element={<TalantHome />} />
         <Route path="/signin" element={<SignIn />} />
@@ -26,11 +23,6 @@ function App() {
           path="/registration/step-3"
           element={<RegistrationFormStepThree />}
         />
-      </Routes>
-      <Footer />
-      <Routes>
-        <Route path="/" element={<TalantHome />} />
-        <Route path="/signin" element={<SignIn />} />
       </Routes>
     </div>
   );
