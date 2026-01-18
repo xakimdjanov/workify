@@ -7,7 +7,9 @@
   margin: 0;
   box-sizing: border-box;
   font-family: sans-serif;
+  list-style: none;
+  text-decoration: none;
 }
 body {
-  background-color: #f3f2ef;
+  background-color: #f0f2f5;
 }
