@@ -92,8 +92,8 @@ export default function RegistrationFormStepThree() {
         localStorage.removeItem("talent_step2");
         localStorage.removeItem("talent_step3");
 
-        alert("Muvaffaqiyatli ro‘yxatdan o‘tdingiz!");
-        navigate("/");
+        alert("Muvaffaqiyatli ro‘yxatdan o‘tdingiz iltimos endi login qiling!");
+        navigate("/signin");
       }
     } catch (error) {
       console.error("Backend xatosi:", error.response?.data);

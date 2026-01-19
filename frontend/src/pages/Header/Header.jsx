@@ -1,42 +1,103 @@
-import React, { useState } from "react";
-import { FiUser, FiBriefcase, FiMenu, FiX } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { FiUser, FiBriefcase, FiMenu, FiX, FiLayout, FiLogOut } from "react-icons/fi";
+import { Link, useNavigate } from "react-router-dom";
+import { talentApi } from "../../services/api";
+import { jwtDecode } from "jwt-decode";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        const decoded = jwtDecode(token);
+        const res = await talentApi.getById(decoded.id);
+        setUser(res.data);
+      } catch (err) {
+        console.error("Header user error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    navigate("/signin");
+  };
 
   return (
     <>
-      <nav className="px-4 sm:px-6 md:px-16 py-4 bg-white border-b border-gray-100">
+      <nav className="px-4 sm:px-6 md:px-16 py-3 bg-white border-b border-gray-100 sticky top-0 z-[60]">
         <div className="flex items-center justify-between">
           <Link to="/">
-            <h1 className="text-2xl font-bold text-slate-800 cursor-pointer">
-              workify
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+              workify<span className="text-blue-600">.</span>
             </h1>
           </Link>
 
-          <div className="hidden min-[700px]:flex items-center gap-6 text-sm font-medium text-gray-500">
-            <a className="flex items-center gap-2 hover:text-slate-900 transition">
-              <FiUser className="text-lg" /> Talents
+          {/* Markaziy menyu */}
+          <div className="hidden min-[850px]:flex items-center gap-8 text-sm font-semibold text-gray-500">
+            <a href="#" className="flex items-center gap-2 hover:text-blue-600 transition">
+              <FiUser /> Talents
             </a>
-            <a className="flex items-center gap-2 hover:text-slate-900 transition">
-              <FiBriefcase className="text-lg" /> Jobs
+            <a href="#" className="flex items-center gap-2 hover:text-blue-600 transition">
+              <FiBriefcase /> Jobs
             </a>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Link to="/signin">
-              <button className="hidden min-[650px]:block px-5 py-2 border rounded-lg font-semibold">
-                Sign in
-              </button>
-            </Link>
-
-            <button className="hidden min-[650px]:block px-5 py-2 bg-[#1B3B5A] text-white rounded-lg font-semibold">
-              Join Now
-            </button>
+          <div className="flex items-center gap-3">
+            {!loading && user ? (
+              /* --- LOGIN BO'LGAN HOLAT --- */
+              <div className="flex items-center gap-3">
+                <Link to="/dashboard" className="hidden sm:flex items-center gap-2 text-sm font-bold text-gray-700 hover:text-blue-600 transition mr-2">
+                  <FiLayout /> Dashboard
+                </Link>
+                
+                <Link to="/profile" className="flex items-center gap-3 bg-gray-50 p-1 pr-4 rounded-full border border-gray-100 hover:shadow-md transition">
+                  <img 
+                    src={user.image || "https://via.placeholder.com/150"} 
+                    alt="profile" 
+                    className="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm"
+                  />
+                  <div className="hidden sm:block">
+                    <p className="text-[13px] font-bold text-slate-800 leading-none">
+                      {user.first_name}
+                    </p>
+                    <p className="text-[10px] text-gray-400 font-medium">Profile</p>
+                  </div>
+                </Link>
+              </div>
+            ) : (
+              /* --- LOGIN BO'LMAGAN HOLAT --- */
+              <div className="flex items-center gap-3">
+                <Link to="/signin">
+                  <button className="hidden sm:block px-5 py-2 text-sm font-bold text-slate-700 hover:text-blue-600 transition">
+                    Sign in
+                  </button>
+                </Link>
+                <Link to="/signup">
+                  <button className="px-5 py-2.5 bg-[#1B3B5A] text-white text-sm rounded-xl font-bold shadow-lg shadow-blue-900/10 hover:bg-[#254d75] transition">
+                    Join Now
+                  </button>
+                </Link>
+              </div>
+            )}
 
             <button
-              className="min-[700px]:hidden text-2xl"
+              className="min-[850px]:hidden text-2xl ml-2 text-slate-800"
               onClick={() => setOpen(true)}
             >
               <FiMenu />
@@ -45,41 +106,47 @@ const Header = () => {
         </div>
       </nav>
 
+      {/* Mobile Menu */}
       <div
-        onClick={() => setOpen(false)}
-        className={`fixed inset-0 bg-black/40 z-40 transition-opacity
-        ${open ? "opacity-100 visible" : "opacity-0 invisible"}`}
-      />
-
-      <div
-        className={`fixed top-0 left-0 w-full h-72 bg-white z-50
-        transform transition-transform duration-300
-        ${open ? "translate-y-0" : "-translate-y-full"}`}
+        className={`fixed top-0 left-0 w-full h-screen bg-white z-[70] transform transition-transform duration-500 ease-in-out ${
+          open ? "translate-x-0" : "translate-x-full"
+        }`}
       >
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-bold">Menu</h2>
-          <button onClick={() => setOpen(false)} className="text-2xl">
+        <div className="flex items-center justify-between p-6 border-b">
+          <span className="font-bold text-xl">Menu</span>
+          <button onClick={() => setOpen(false)} className="p-2 bg-gray-100 rounded-full text-2xl">
             <FiX />
           </button>
         </div>
 
-        <div className="flex flex-col gap-5 p-5 text-sm font-medium text-slate-700">
-          <a className="flex items-center gap-3 text-base hover:text-slate-900 transition">
-            <FiUser className="text-lg" /> Talents
-          </a>
-          <a className="flex items-center gap-3 text-base hover:text-slate-900 transition">
-            <FiBriefcase className="text-lg" /> Jobs
-          </a>
+        <div className="p-6 space-y-6">
+          {user && (
+            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
+              <img src={user.image} className="w-14 h-14 rounded-full object-cover" />
+              <div>
+                <h4 className="font-bold text-lg">{user.first_name} {user.last_name}</h4>
+                <p className="text-sm text-gray-500">{user.email}</p>
+              </div>
+            </div>
+          )}
 
-          <Link to="/signin">
-            <button className="w-full px-4 py-2 border rounded-lg font-semibold">
-              Sign in
+          <div className="space-y-4">
+            <Link to="/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-4 text-lg font-bold text-slate-700">
+              <FiLayout className="text-blue-500" /> Dashboard
+            </Link>
+            <Link to="/profile" onClick={() => setOpen(false)} className="flex items-center gap-4 text-lg font-bold text-slate-700">
+              <FiUser className="text-blue-500" /> My Profile
+            </Link>
+          </div>
+
+          {user && (
+            <button 
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-2 p-4 text-red-500 font-bold border border-red-100 rounded-2xl bg-red-50"
+            >
+              <FiLogOut /> Log Out
             </button>
-          </Link>
-
-          <button className="w-full px-4 py-2 bg-[#1B3B5A] text-white rounded-lg font-semibold">
-            Join Now
-          </button>
+          )}
         </div>
       </div>
     </>

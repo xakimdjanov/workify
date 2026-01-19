@@ -18,18 +18,38 @@ api.interceptors.request.use((config) => {
 });
 
 // --- TALENT API ---
+// services/api.js
 export const talentApi = {
-  registerTalent: (formData) => api.post('/talent/register', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
-  login: (data) => api.post('/talent/login', data),
-  getProfile: () => api.get('/talent/profile'),
-  getAll: () => api.get('/talent'),
+  registerTalent: (formData) => {
+    const token = localStorage.getItem("token");
+    return api.post("/talent/register", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
+
+  login: (data) => api.post("/talent/login", data),
+
+  getAll: () => api.get("/talent"),
+
   getById: (id) => api.get(`/talent/${id}`),
+
   search: (query) => api.get(`/talent/search?query=${query}`),
-  update: (id, data) => api.put(`/talent/${id}`, data),
+
+  update: (id, formData) => {
+    const token = localStorage.getItem("token");
+    return api.put(`/talent/${id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // ❌ Content-Type YO‘Q
+      },
+    });
+  },
+
   delete: (id) => api.delete(`/talent/${id}`),
 };
+
 
 // --- COMPANY API ---
 export const companyApi = {

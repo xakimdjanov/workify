@@ -32,7 +32,7 @@ const SignIn = () => {
       if (token) {
         localStorage.setItem("token", token);
         alert("Login muvaffaqiyatli!");
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error) {
       const message = error.response?.data?.message || "Login yoki parol xato!";
