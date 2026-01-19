@@ -12,6 +12,7 @@ import JobMatches from "./components/JobMatches/JobMatches";
 import ProfilePage from "./components/MyProfile/MyProfile";
 import JobDetail from "./components/JobDetail/JobDetail";
 import JobAlerts from "./components/JobAlerts/JobAlerts";
+import CompanyDetail from "./components/CompanyDetail/CompanyDetail";
 
 // --- HIMOYALANGAN YO'LLAR UCHUN KOMPONENT ---
 const ProtectedRoute = () => {
@@ -44,7 +45,8 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/alerts" element={<JobAlerts />} />
           <Route path="/matches" element={<JobMatches />} />
-          <Route path="/job-details/:id" element={<JobDetail />} />
+          <Route path="/job-post/:id" element={<JobDetail />} />
+          <Route path="/job-details/:id" element={<CompanyDetail />} />
           <Route path="/settings" element={<div>Settings page</div>} />
         </Route>
       </Route>
