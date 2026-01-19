@@ -19,7 +19,6 @@ export default function RegistrationForm() {
   const [activeTab, setActiveTab] = useState("talent");
   const [showPassword, setShowPassword] = useState(false);
 
-  // Ma'lumotlarni saqlash uchun state
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -31,7 +30,6 @@ export default function RegistrationForm() {
     phone: "",
   });
 
-  // Agar avval ma'lumot kiritilgan bo'lsa, uni localStorage dan yuklab olish
   useEffect(() => {
     const savedData = localStorage.getItem("step1_data");
     if (savedData) {
@@ -39,7 +37,6 @@ export default function RegistrationForm() {
     }
   }, []);
 
-  // Input o'zgarganda state-ni yangilash
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -48,26 +45,21 @@ export default function RegistrationForm() {
     }));
   };
 
-  // Gender o'zgarganda alohida funksiya
   const handleGenderChange = (value) => {
     setFormData((prev) => ({ ...prev, gender: value }));
   };
 
-  // Keyingi bosqichga o'tish
   const handleNext = (e) => {
     e.preventDefault();
-    
-    // Oddiy tekshiruv (Validation)
+
     if (!formData.first_name || !formData.email || !formData.password) {
       alert("Iltimos, ism, email va parolni to'ldiring!");
       return;
     }
 
-    // Ma'lumotlarni vaqtincha saqlash
     localStorage.setItem("step1_data", JSON.stringify(formData));
     localStorage.setItem("user_role", activeTab);
-    
-    // 2-qadamga o'tish
+
     navigate("/registration/step-2");
   };
 
@@ -76,26 +68,32 @@ export default function RegistrationForm() {
       <Header />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 md:p-8">
         <div className="bg-white rounded-2xl shadow-lg w-full max-w-[388px] md:max-w-[988px] p-6 md:p-12">
-          
-          {/* Tablar: Talent yoki Company */}
-          <div className="flex gap-3 mb-8">
+          <div className="relative bg-gray-100 rounded-[50px] border border-gray-200 grid grid-cols-2 p-1 mb-8 overflow-hidden">
+            <div
+              className="absolute top-1 bottom-1 left-1 w-[calc(50%-0.5rem)] bg-white rounded-[50px] shadow-md transition-all duration-300"
+              style={{
+                transform: `translateX(${
+                  activeTab === "company" ? "100%" : "0%"
+                })`,
+              }}
+            ></div>
+
             <button
+              type="button"
               onClick={() => setActiveTab("talent")}
-              className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all flex-1 ${
-                activeTab === "talent"
-                  ? "bg-white text-[#163D5C] shadow-md border-2 border-[#163D5C]"
-                  : "bg-gray-100 text-gray-400 border-2 border-transparent"
+              className={`flex items-center justify-center gap-2 px-6 py-3 relative z-10 font-medium transition-colors duration-200 ${
+                activeTab === "talent" ? "text-[#163D5C]" : "text-gray-400"
               }`}
             >
               <FaUser className="text-sm" />
               <span>Talent</span>
             </button>
+
             <button
+              type="button"
               onClick={() => setActiveTab("company")}
-              className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all flex-1 ${
-                activeTab === "company"
-                  ? "bg-white text-[#163D5C] shadow-md border-2 border-[#163D5C]"
-                  : "bg-gray-100 text-gray-400 border-2 border-transparent"
+              className={`flex items-center justify-center gap-2 px-6 py-3 relative z-10 font-medium transition-colors duration-200 ${
+                activeTab === "company" ? "text-[#163D5C]" : "text-gray-400"
               }`}
             >
               <FaBuilding className="text-sm" />
@@ -105,9 +103,10 @@ export default function RegistrationForm() {
 
           <form onSubmit={handleNext} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* First Name */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">First name</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  First name
+                </label>
                 <div className="relative">
                   <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
                   <input
@@ -120,9 +119,10 @@ export default function RegistrationForm() {
                   />
                 </div>
               </div>
-              {/* Last Name */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Last name</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Last name
+                </label>
                 <div className="relative">
                   <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
                   <input
@@ -138,9 +138,10 @@ export default function RegistrationForm() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Email */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Email</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Email
+                </label>
                 <div className="relative">
                   <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
                   <input
@@ -153,9 +154,10 @@ export default function RegistrationForm() {
                   />
                 </div>
               </div>
-              {/* Password */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Password</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Password
+                </label>
                 <div className="relative">
                   <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
                   <input
@@ -178,29 +180,40 @@ export default function RegistrationForm() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Gender Selection */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Gender</label>
-                <div className="flex gap-3">
+                <label className="block text-gray-700 font-medium mb-2">
+                  Gender
+                </label>
+                <div className="relative bg-gray-100 rounded-[50px] border border-gray-200 grid grid-cols-2 p-1 overflow-hidden">
+                  <div
+                    className="absolute top-1 bottom-1 left-1 w-[calc(50%-0.5rem)] bg-white rounded-[50px] shadow-md transition-all duration-300"
+                    style={{
+                      transform: `translateX(${
+                        formData.gender === "female" ? "100%" : "0%"
+                      })`,
+                    }}
+                  ></div>
+
                   <button
                     type="button"
                     onClick={() => handleGenderChange("male")}
-                    className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all flex-1 ${
+                    className={`flex items-center justify-center gap-2 px-6 py-3 relative z-10 font-medium transition-colors duration-200 ${
                       formData.gender === "male"
-                        ? "bg-white text-[#163D5C] shadow-md border-2 border-[#163D5C]"
-                        : "bg-gray-100 text-gray-400 border-2 border-transparent"
+                        ? "text-[#163D5C]"
+                        : "text-gray-400"
                     }`}
                   >
                     <FaUser className="text-sm" />
                     <span>Male</span>
                   </button>
+
                   <button
                     type="button"
                     onClick={() => handleGenderChange("female")}
-                    className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all flex-1 ${
+                    className={`flex items-center justify-center gap-2 px-6 py-3 relative z-10 font-medium transition-colors duration-200 ${
                       formData.gender === "female"
-                        ? "bg-white text-[#163D5C] shadow-md border-2 border-[#163D5C]"
-                        : "bg-gray-100 text-gray-400 border-2 border-transparent"
+                        ? "text-[#163D5C]"
+                        : "text-gray-400"
                     }`}
                   >
                     <FaUser className="text-sm" />
@@ -208,9 +221,10 @@ export default function RegistrationForm() {
                   </button>
                 </div>
               </div>
-              {/* Date of Birth */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Date of birth</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Date of birth
+                </label>
                 <div className="relative">
                   <FaCalendarAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
                   <input
@@ -225,9 +239,10 @@ export default function RegistrationForm() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Location */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Location</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Location
+                </label>
                 <div className="relative">
                   <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
                   <input
@@ -240,9 +255,10 @@ export default function RegistrationForm() {
                   />
                 </div>
               </div>
-              {/* Phone */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Phone</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Phone
+                </label>
                 <div className="relative">
                   <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
                   <input
@@ -257,7 +273,6 @@ export default function RegistrationForm() {
               </div>
             </div>
 
-            {/* Tugmalar */}
             <div className="flex flex-col md:flex-row gap-4 pt-4 justify-center">
               <button
                 type="button"
