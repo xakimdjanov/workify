@@ -10,6 +10,8 @@ import RegistrationFormStepTwo from "./pages/RegistrationFormStepTwo/Registratio
 import RegistrationFormStepThree from "./pages/RegistrationFormStepThree/RegistrationFormStepThree";
 import JobMatches from "./components/JobMatches/JobMatches";
 import ProfilePage from "./components/MyProfile/MyProfile";
+import JobDetail from "./components/JobDetail/JobDetail";
+import JobAlerts from "./components/JobAlerts/JobAlerts";
 
 // --- HIMOYALANGAN YO'LLAR UCHUN KOMPONENT ---
 const ProtectedRoute = () => {
@@ -39,7 +41,10 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/alerts" element={<JobAlerts />} />
           <Route path="/matches" element={<JobMatches />} />
+          <Route path="/job-details/:id" element={<JobDetail />} />
           <Route path="/settings" element={<div>Settings page</div>} />
         </Route>
       </Route>
