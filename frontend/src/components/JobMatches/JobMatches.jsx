@@ -218,7 +218,7 @@ export default function JobMatches() {
                       </div>
                       <div>
                         <h3 className="text-xl font-bold text-gray-800">{job.company?.company_name}</h3>
-                        <p className="text-gray-400 text-sm font-bold">Computer Software</p>
+                        <p className="text-gray-400 text-sm font-bold">{job.company.city}</p>
                         <div className="flex items-center gap-1 mt-1">
                           {[1,2,3,4].map(i => <span key={i} className="text-yellow-400 text-sm">★</span>)}
                           <span className="text-gray-200 text-sm">★</span>
@@ -230,11 +230,11 @@ export default function JobMatches() {
                     {/* Meta Info */}
                     <div className="flex flex-col md:items-end gap-2">
                       <div className="flex items-center gap-2 text-gray-500 font-bold text-sm">
-                        <FaCity className="text-blue-300" /> {job.location || "Tashkent, Uzbekistan"}
+                        <FaCity className="text-blue-300" /> {job.company.city || "Tashkent, Uzbekistan"}
                       </div>
                       <p className="text-gray-400 text-xs font-bold">4 days ago</p>
                       <span className="bg-[#E7F8F0] text-[#52D394] px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider">
-                        Now hiring
+                        {job.workplace_type}
                       </span>
                     </div>
                   </div>
@@ -260,13 +260,7 @@ export default function JobMatches() {
                     <p className="text-gray-800 font-black text-sm mb-3">Required skills:</p>
                     <div className="flex flex-wrap gap-2">
                       <span className="px-5 py-2.5 bg-[#F1F3F6] text-gray-600 rounded-xl text-xs font-bold border border-transparent">
-                        {job.specialty} (2 years)
-                      </span>
-                      <span className="px-5 py-2.5 bg-[#F1F3F6] text-gray-600 rounded-xl text-xs font-bold border border-transparent">
-                        Adobe Photoshop (1 year)
-                      </span>
-                      <span className="px-5 py-2.5 bg-[#F1F3F6] text-gray-600 rounded-xl text-xs font-bold border border-transparent">
-                        Responsive UX/UI (6 years)
+                        {job.skils}
                       </span>
                     </div>
                   </div>

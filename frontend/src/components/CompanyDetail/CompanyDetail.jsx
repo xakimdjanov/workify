@@ -77,13 +77,13 @@ export default function JobDetail() {
                 <h1 className="text-2xl font-black text-slate-800 tracking-tight">{job.occupation}</h1>
                 <p className="text-gray-400 font-bold text-sm">{job.company?.company_name}</p>
                 <p className="text-gray-400 text-[12px] mt-1 font-medium italic">
-                  {job.location} • {job.workplace_type}
+                  {job.company?.city} • {job.workplace_type}
                 </p>
               </div>
             </div>
             <div className="md:text-right w-full md:w-auto">
               <p className="text-gray-400 text-xs font-bold mb-1">Posted {new Date(job.createdAt).toLocaleDateString()}</p>
-              <span className="text-2xl font-black text-slate-800">${job.salary_max?.toLocaleString()}</span>
+              <span className="text-2xl font-black text-slate-800">${job.salary_min}-{job.salary_max}</span>
             </div>
           </div>
 
@@ -98,16 +98,7 @@ export default function JobDetail() {
             <div>
               <h3 className="text-md font-black text-slate-800 mb-3 uppercase tracking-wider text-[13px]">Required skills:</h3>
               <div className="flex flex-wrap gap-2">
-                {/* Agar backenddan skills massiv bo'lib kelsa: */}
-                {job.skills ? (
-                  job.skills.split(',').map((skill, idx) => (
-                    <span key={idx} className="px-4 py-2 bg-[#F8FAFC] text-gray-500 text-[11px] font-bold rounded-lg border border-gray-100 uppercase">
-                      {skill.trim()}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-gray-400 text-xs italic">No specific skills listed.</span>
-                )}
+               <span className="px-5 py-2.5 bg-[#F1F3F6] text-gray-600 rounded-xl text-xs font-bold border border-transparent">{job.skils}</span>
               </div>
             </div>
           </div>
