@@ -2,9 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { talentApi } from "../../services/api";
 import {
-  FaBriefcase, FaClock, FaFileContract, FaUserTie,
-  FaBuilding, FaDollarSign, FaFlag, FaCity, FaChevronDown,
-  FaHome
+  FaBriefcase,
+  FaClock,
+  FaFileContract,
+  FaUserTie,
+  FaBuilding,
+  FaDollarSign,
+  FaFlag,
+  FaCity,
+  FaChevronDown,
+  FaHome,
 } from "react-icons/fa";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
@@ -19,7 +26,6 @@ export default function RegistrationFormStepThree() {
   const [city, setCity] = useState("");
   const [showWorkplaceDropdown, setShowWorkplaceDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
-
 
   useEffect(() => {
     const savedData = localStorage.getItem("talent_step3");
@@ -52,7 +58,6 @@ export default function RegistrationFormStepThree() {
 
       console.log(allData);
 
-
       if (!allData.email) {
         alert("Email topilmadi. Iltimos 1-qadamni qayta to‘ldiring.");
         setLoading(false);
@@ -64,7 +69,10 @@ export default function RegistrationFormStepThree() {
       Object.entries(allData).forEach(([key, value]) => {
         if (value === null || value === undefined) return;
 
-        if ((key === "image" || key === "profileimg") && value instanceof File) {
+        if (
+          (key === "image" || key === "profileimg") &&
+          value instanceof File
+        ) {
           formData.append("image", value);
           return;
         }
@@ -90,7 +98,9 @@ export default function RegistrationFormStepThree() {
     } catch (error) {
       console.error("Backend xatosi:", error.response?.data);
       alert(
-        `Xatolik: ${error.response?.data?.message || "Serverda muammo yuz berdi"}`
+        `Xatolik: ${
+          error.response?.data?.message || "Serverda muammo yuz berdi"
+        }`
       );
     } finally {
       setLoading(false);
@@ -102,8 +112,6 @@ export default function RegistrationFormStepThree() {
       <Header />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 md:p-8">
         <div className="bg-white rounded-2xl shadow-lg w-full max-w-[388px] md:max-w-[988px] p-6 md:p-12">
-
-          {/* Step Progress Visual */}
           <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6">
               How do you imagine your dream job?
@@ -118,55 +126,65 @@ export default function RegistrationFormStepThree() {
           </div>
 
           <div className="space-y-6">
-{/* Employment Type Selection */}
-<div>
-  <label className="block text-gray-700 font-medium mb-3">Employment type</label>
+            <div>
+              <label className="block text-gray-700 font-medium mb-3">
+                Employment type
+              </label>
 
-  <div className="relative bg-gray-100 rounded-[50px] border border-gray-200 grid grid-cols-4 p-1 overflow-hidden">
-    {/* Animated Marker */}
-    <div
-      className="absolute top-1 bottom-1 left-1 w-[calc(25%-0.5rem)] bg-white rounded-[50px] shadow-md transition-all duration-300"
-      style={{
-        transform: `translateX(${["fulltime", "parttime", "contract", "freelance"].indexOf(employmentType) * 100}%)`,
-      }}
-    ></div>
+              <div className="relative bg-gray-100 rounded-[50px] border border-gray-200 grid grid-cols-4 p-1 overflow-hidden">
+                <div
+                  className="absolute top-1 bottom-1 left-1 w-[calc(25%-0.5rem)] bg-white rounded-[50px] shadow-md transition-all duration-300"
+                  style={{
+                    transform: `translateX(${
+                      ["fulltime", "parttime", "contract", "freelance"].indexOf(
+                        employmentType
+                      ) * 100
+                    }%)`,
+                  }}
+                ></div>
 
-    {[
-      { id: "fulltime", label: "Full time", icon: <FaBriefcase /> },
-      { id: "parttime", label: "Part time", icon: <FaClock /> },
-      { id: "contract", label: "Contract", icon: <FaFileContract /> },
-      { id: "freelance", label: "Freelance", icon: <FaUserTie /> },
-    ].map((type) => (
-      <button
-        key={type.id}
-        type="button"
-        onClick={() => setEmploymentType(type.id)}
-        className={`flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 py-2 md:py-4 relative z-10 font-medium transition-all duration-200 ${
-          employmentType === type.id ? "text-[#163D5C]" : "text-gray-400"
-        }`}
-      >
-        <span className="text-sm md:text-lg">{type.icon}</span>
-        <span className="text-[10px] sm:text-xs md:text-base whitespace-nowrap">
-          {type.label}
-        </span>
-      </button>
-    ))}
-  </div>
-</div>
+                {[
+                  { id: "fulltime", label: "Full time", icon: <FaBriefcase /> },
+                  { id: "parttime", label: "Part time", icon: <FaClock /> },
+                  {
+                    id: "contract",
+                    label: "Contract",
+                    icon: <FaFileContract />,
+                  },
+                  { id: "freelance", label: "Freelance", icon: <FaUserTie /> },
+                ].map((type) => (
+                  <button
+                    key={type.id}
+                    type="button"
+                    onClick={() => setEmploymentType(type.id)}
+                    className={`flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 py-2 md:py-4 relative z-10 font-medium transition-all duration-200 ${
+                      employmentType === type.id
+                        ? "text-[#163D5C]"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    <span className="text-sm md:text-lg">{type.icon}</span>
+                    <span className="text-[10px] sm:text-xs md:text-base whitespace-nowrap">
+                      {type.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-
-            {/* Workplace Type Toggle */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-              {/* Workplace Type */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Workplace type</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Workplace type
+                </label>
                 <div className="relative bg-gray-100 rounded-[50px] border border-gray-200 flex overflow-hidden">
-                  {/* Animated Marker */}
                   <div
                     className={`absolute top-0 left-0 h-full w-1/3 bg-white rounded-[50px] shadow-md transition-all duration-300`}
                     style={{
-                      transform: `translateX(${["Onsite", "Remote", "Hybrid"].indexOf(workplaceType) * 100}%)`,
+                      transform: `translateX(${
+                        ["Onsite", "Remote", "Hybrid"].indexOf(workplaceType) *
+                        100
+                      }%)`,
                     }}
                   ></div>
 
@@ -185,12 +203,12 @@ export default function RegistrationFormStepThree() {
                     </button>
                   ))}
                 </div>
-
               </div>
 
-              {/* Minimum Salary */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Minimum salary</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Minimum salary
+                </label>
                 <div className="relative">
                   <FaDollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
                   <input
@@ -200,16 +218,18 @@ export default function RegistrationFormStepThree() {
                     className="w-full pl-12 pr-10 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#163D5C] outline-none"
                     placeholder="Enter amount"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    $
+                  </span>
                 </div>
               </div>
             </div>
 
-
-            {/* Location Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-gray-700 font-medium mb-2">City</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  City
+                </label>
                 <div className="relative">
                   <FaCity className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
                   <input
@@ -223,7 +243,6 @@ export default function RegistrationFormStepThree() {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex flex-col md:flex-row gap-4 pt-4 justify-center">
               <button
                 type="button"
@@ -241,9 +260,24 @@ export default function RegistrationFormStepThree() {
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Processing...
                   </span>
