@@ -9,6 +9,7 @@ import SignIn from "./pages/Auth/SignIn";
 import RegistrationForm from "./pages/RegistrationPage/RegistrationPage";
 import RegistrationFormStepTwo from "./pages/RegistrationFormStepTwo/RegistrationFormStepTwo";
 import RegistrationFormStepThree from "./pages/RegistrationFormStepThree/RegistrationFormStepThree";
+import JobMatches from "./components/JobMatches/JobMatches";
 
 function App() {
   return (
@@ -17,16 +18,22 @@ function App() {
       <Route path="/" element={<TalantHome />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/registration/step-1" element={<RegistrationForm />} />
-      <Route path="/registration/step-2" element={<RegistrationFormStepTwo />} />
-      <Route path="/registration/step-3" element={<RegistrationFormStepThree />} />
+      <Route
+        path="/registration/step-2"
+        element={<RegistrationFormStepTwo />}
+      />
+      <Route
+        path="/registration/step-3"
+        element={<RegistrationFormStepThree />}
+      />
 
       {/* Dashboard layout */}
-<Route element={<MainLayout />}>
-  <Route path="/dashboard" element={<Dashboard />} />
-  <Route path="/profile" element={<div>Profile page</div>} />
-  <Route path="/settings" element={<div>Settings page</div>} />
-</Route>
-
+      <Route element={<MainLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<div>Profile page</div>} />
+        <Route path="/matches" element={<JobMatches />} />
+        <Route path="/settings" element={<div>Settings page</div>} />
+      </Route>
     </Routes>
   );
 }
