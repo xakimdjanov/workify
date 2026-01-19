@@ -276,13 +276,13 @@ export default function JobMatches() {
     <FaThumbsDown size={22} />
   </button>
   
-  <button className="px-10 py-4 bg-[#163D5C] text-white rounded-2xl font-black hover:bg-[#0f2d45] transition-all shadow-lg shadow-blue-900/10">
+  <button onClick={() => navigate(`/job-post/${job.id}`) } className="px-10 py-4 bg-[#163D5C] text-white rounded-2xl font-black hover:bg-[#0f2d45] transition-all shadow-lg shadow-blue-900/10">
     Quick apply
   </button>
 
   {/* Detail page'ga o'tish tugmasi */}
   <button 
-    onClick={() => navigate(`/job-details/${job.id}`)} // <-- Yo'naltirish mantiqi
+    onClick={() =>navigate(`/job-details/${job.company_id}`)} // <-- Yo'naltirish mantiqi
     className="px-8 py-4 border-2 border-[#163D5C] text-[#163D5C] rounded-2xl font-black hover:bg-gray-50 transition-all cursor-pointer"
   >
     View job post
