@@ -13,6 +13,7 @@ import ProfilePage from "./components/MyProfile/MyProfile";
 import JobDetail from "./components/JobDetail/JobDetail";
 import JobAlerts from "./components/JobAlerts/JobAlerts";
 import CompanyDetail from "./components/CompanyDetail/CompanyDetail";
+import Faq from './pages/Faq/Faq';
 
 // --- HIMOYALANGAN YO'LLAR UCHUN KOMPONENT ---
 const ProtectedRoute = () => {
@@ -48,6 +49,7 @@ function App() {
           <Route path="/job-post/:id" element={<JobDetail />} />
           <Route path="/job-details/:id" element={<CompanyDetail />} />
           <Route path="/settings" element={<div>Settings page</div>} />
+          <Route path="/faq" element={<Faq />} />
         </Route>
       </Route>
 
