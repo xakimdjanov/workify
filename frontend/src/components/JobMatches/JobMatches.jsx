@@ -101,7 +101,7 @@ export default function JobMatches() {
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
           <div className="p-6 border-b border-gray-50 flex justify-between items-center">
-            <h2 className="text-xl font-bold text-[#163D5C]">Job Alerts</h2>
+            <h2 className="text-xl font-bold text-[#163D5C]">Job Matches</h2>
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className="p-2 hover:bg-gray-50 rounded-full transition-all"
@@ -178,7 +178,7 @@ export default function JobMatches() {
 
                 <div>
                   <label className="block text-gray-700 font-bold mb-4">
-                    Minimum salary{" "}
+                    Minimum salary
                     <span className="text-gray-300 font-medium">(USD)</span>
                   </label>
                   <div className="relative">
