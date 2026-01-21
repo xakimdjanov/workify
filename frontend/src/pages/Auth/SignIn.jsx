@@ -3,7 +3,7 @@ import { MdEmail } from "react-icons/md";
 import { IoMdLock } from "react-icons/io";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { talentApi } from "../../services/api"; 
+import { talentApi } from "../../services/api";
 import Footer from "../Footer/Footer";
 import Header from "../Header/Header";
 
@@ -27,8 +27,8 @@ const SignIn = () => {
     try {
       const res = await talentApi.login(formData);
 
-      const { token } = res.data; 
-      
+      const { token } = res.data;
+
       if (token) {
         localStorage.setItem("token", token);
         alert("Login muvaffaqiyatli!");
@@ -47,14 +47,19 @@ const SignIn = () => {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow flex flex-col justify-center items-center bg-gray-100 py-10">
-        <h2 className="text-3xl font-semibold text-center mb-6 text-gray-700">Login</h2>
-        
+        <h2 className="text-3xl font-semibold text-center mb-6 text-gray-700">
+          Login
+        </h2>
+
         <form
           onSubmit={handleSubmit}
           className="bg-white shadow-lg rounded-xl p-8 w-full max-w-sm border border-gray-200"
         >
           <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Email Address
             </label>
             <div className="relative">
@@ -72,7 +77,10 @@ const SignIn = () => {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Password
             </label>
             <div className="relative">
@@ -91,7 +99,11 @@ const SignIn = () => {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <FaRegEyeSlash size={20} /> : <FaRegEye size={20} />}
+                {showPassword ? (
+                  <FaRegEyeSlash size={20} />
+                ) : (
+                  <FaRegEye size={20} />
+                )}
               </button>
             </div>
           </div>
@@ -100,7 +112,9 @@ const SignIn = () => {
             type="submit"
             disabled={loading}
             className={`w-full py-2 rounded-lg text-white font-semibold transition ${
-              loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#163D5C] hover:bg-[#0f2a40]"
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#163D5C] hover:bg-[#0f2a40]"
             }`}
           >
             {loading ? "Signing In..." : "Sign In"}
@@ -108,7 +122,10 @@ const SignIn = () => {
 
           <p className="text-center text-sm text-gray-600 mt-6">
             Don't have an account?{" "}
-            <Link to="/registration/step-1" className="text-[#163D5C] font-bold hover:underline">
+            <Link
+              to="/registration/step-1"
+              className="text-[#163D5C] font-bold hover:underline"
+            >
               Register
             </Link>
           </p>

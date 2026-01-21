@@ -49,17 +49,17 @@ const Contact = () => {
               <input
                 type="text"
                 placeholder="Your name"
-                className="w-full p-4 rounded-xl border border-gray-100 bg-gray-50/30 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white placeholder:text-gray-300 transition-all text-sm md:text-base"
+                className="w-full p-4 rounded-xl border border-gray-300 bg-gray-50/30 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white placeholder:text-gray-400 transition-all text-sm md:text-base"
               />
               <input
                 type="email"
                 placeholder="Your email"
-                className="w-full p-4 rounded-xl border border-gray-100 bg-gray-50/30 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white placeholder:text-gray-300 transition-all text-sm md:text-base"
+                className="w-full p-4 rounded-xl border border-gray-300 bg-gray-50/30 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white placeholder:text-gray-400 transition-all text-sm md:text-base"
               />
               <textarea
                 placeholder="What is the problem?"
                 rows="4"
-                className="w-full p-4 rounded-xl border border-gray-100 bg-gray-50/30 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:bg-white placeholder:text-gray-300 transition-all resize-none text-sm md:text-base"
+                className="w-full p-4 rounded-xl border border-gray-300 bg-gray-50/30 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white placeholder:text-gray-400 transition-all resize-none text-sm md:text-base"
               ></textarea>
 
               <div className="flex justify-center pt-4">

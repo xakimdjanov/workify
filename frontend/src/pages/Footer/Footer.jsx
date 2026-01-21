@@ -3,10 +3,9 @@ import {
   BsInstagram,
   BsFacebook,
   BsYoutube,
-  BsTelegram, // Rasmdagi oxirgi icon Twitter emas, Telegramga o'xshash ekan
+  BsTelegram,
 } from "react-icons/bs";
 
-// Ustunlar uchun yordamchi komponent (Kod takrorlanmasligi uchun)
 const FooterColumn = ({ title, links }) => (
   <div className="flex flex-col gap-4">
     <h5 className="text-white font-bold text-[15px] mb-2">{title}</h5>

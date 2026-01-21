@@ -86,15 +86,15 @@ const Faq = () => {
                 </button>
 
                 <div
-                  className={`transition-all duration-500 ease-in-out px-11 md:px-16 overflow-hidden ${
-                    isOpen
-                      ? "max-h-[800px] pb-5 md:pb-8 opacity-100"
-                      : "max-h-0 opacity-0"
+                  className={`grid transition-all duration-500 ease-in-out ${
+                    isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                   }`}
                 >
-                  <p className="text-gray-500 leading-relaxed text-xs md:text-base border-t border-gray-50 pt-3 md:pt-4">
-                    {item.answer}
-                  </p>
+                  <div className="overflow-hidden">
+                    <p className="text-gray-500 leading-relaxed text-xs md:text-base border-t border-gray-50 pt-3 md:pt-4 px-4 md:px-6 pb-5 md:pb-8">
+                      {item.answer}
+                    </p>
+                  </div>
                 </div>
               </div>
             );

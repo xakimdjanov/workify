@@ -28,7 +28,6 @@ const Dashboard3 = () => {
         const res = await applicationApi.getAll();
         let applications = [];
 
-        // API javob formatini turli holatlarga moslashtirish
         if (res?.data) {
           if (Array.isArray(res.data)) {
             applications = res.data;
@@ -41,7 +40,6 @@ const Dashboard3 = () => {
           }
         }
 
-        // Faqat o'z applicationlarini filtr qilish
         const token = localStorage.getItem("token");
         let myApplications = applications;
 
@@ -75,7 +73,6 @@ const Dashboard3 = () => {
           }
         }
 
-        // Hafta boshini topish (dushanba)
         const now = new Date();
         const dayOfWeek = now.getDay();
         const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
@@ -86,7 +83,6 @@ const Dashboard3 = () => {
         const weekEnd = new Date(monday);
         weekEnd.setDate(monday.getDate() + 7);
 
-        // Har kun uchun hisoblagich
         const counts = new Array(7).fill(0);
 
         myApplications.forEach((app) => {
@@ -101,11 +97,9 @@ const Dashboard3 = () => {
             }
           }
         });
-
-        // Recharts uchun tayyor data
         const formattedData = weekDaysShort.map((day, index) => ({
           day,
-          views: counts[index],           // yoki jobOffers, applicationsCount — nomini o‘zgartirishingiz mumkin
+          views: counts[index],
         }));
 
         if (isMounted) {
@@ -114,7 +108,6 @@ const Dashboard3 = () => {
       } catch (err) {
         console.error("Dashboard xatosi:", err);
         setError("Ma'lumotlarni yuklab bo'lmadi");
-        // Test ma'lumot (real loyihada o‘chirib qo‘yish mumkin)
         if (isMounted) {
           setChartData([
             { day: "M", views: 12 },
@@ -138,7 +131,6 @@ const Dashboard3 = () => {
     };
   }, []);
 
-  // Custom tooltip — sizning dizayningizga mos
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const value = payload[0].value;
@@ -163,7 +155,6 @@ const Dashboard3 = () => {
   return (
     <div className="w-full mx-auto px-4 py-6">
       <div className="bg-white rounded-3xl shadow-lg p-6 md:p-8 border border-gray-100">
-        {/* Header */}
         <div className="text-center mb-8 md:mb-10">
           <h2 className="text-2xl md:text-3xl font-bold text-slate-800 mb-4">
             Job Offers
@@ -181,7 +172,6 @@ const Dashboard3 = () => {
           <div className="text-gray-400 text-sm">{currentDate}</div>
         </div>
 
-        {/* Chart */}
         <div className="h-80 md:h-96 w-full">
           {loading ? (
             <div className="h-full flex items-center justify-center text-gray-500 gap-3">
@@ -224,7 +214,11 @@ const Dashboard3 = () => {
 
                 <Tooltip
                   content={<CustomTooltip />}
-                  cursor={{ stroke: "#5ABF89", strokeWidth: 2, strokeDasharray: "4 4" }}
+                  cursor={{
+                    stroke: "#5ABF89",
+                    strokeWidth: 2,
+                    strokeDasharray: "4 4",
+                  }}
                 />
 
                 <Area

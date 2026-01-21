@@ -12,37 +12,31 @@ const Dashbord1 = () => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        // token decode
         const { id } = jwtDecode(token);
 
-        // real API
         const res = await talentApi.getById(id);
         const data = res.data;
 
         const values = Object.values(data);
 
-        // id, createdAt, updatedAt hisobga olinmaydi
         const filtered = values.filter(
           (v) =>
             typeof v !== "number" &&
             v !== data.createdAt &&
-            v !== data.updatedAt,
+            v !== data.updatedAt
         );
 
         const filled = filtered.filter((v) => {
           if (v === null) return false;
           if (v === "") return false;
 
-          // string bo‘lsa ("[]", "{}")
           if (typeof v === "string") {
             if (v === "[]" || v === "{}") return false;
             return true;
           }
 
-          // array bo‘lsa
           if (Array.isArray(v)) return v.length > 0;
 
-          // object bo‘lsa
           if (typeof v === "object") return Object.keys(v).length > 0;
 
           return true;
@@ -61,7 +55,6 @@ const Dashbord1 = () => {
     loadProfile();
   }, []);
 
-  // rangni foizga qarab aniqlash
   const getProgressColor = (percentage) => {
     if (percentage <= 30) return "#f7481d";
     if (percentage <= 70) return "#FB959D";
@@ -79,7 +72,6 @@ const Dashbord1 = () => {
     return (
       <div className="relative">
         <svg width={size} height={size} className="-rotate-90">
-          {/* Background */}
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -89,7 +81,6 @@ const Dashbord1 = () => {
             fill="none"
           />
 
-          {/* Progress */}
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -104,7 +95,6 @@ const Dashbord1 = () => {
           />
         </svg>
 
-        {/* Center text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
           <p className="text-3xl font-bold">{percentage}%</p>
           <p className="text-sm uppercase tracking-wider">Complete</p>

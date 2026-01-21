@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { applicationApi } from "../../services/api"; // o'zingizning API servisingiz
+import { applicationApi } from "../../services/api";
 
 const Dashboard2 = () => {
   const [weeklyStats, setWeeklyStats] = useState([0, 0, 0, 0, 0, 0, 0]);
@@ -10,7 +10,7 @@ const Dashboard2 = () => {
 
   const getThisMonday = () => {
     const now = new Date();
-    const day = now.getDay(); // 0 = Sunday, 1 = Monday, ...
+    const day = now.getDay();
     const diff = day === 0 ? 6 : day - 1;
     const monday = new Date(now);
     monday.setDate(now.getDate() - diff);
@@ -28,7 +28,6 @@ const Dashboard2 = () => {
 
         const response = await applicationApi.getAll();
 
-        // API javob formatini moslashuvchan qayta ishlash
         let applications = [];
         if (response?.data) {
           if (Array.isArray(response.data)) {
@@ -38,12 +37,10 @@ const Dashboard2 = () => {
           } else if (Array.isArray(response.data.results)) {
             applications = response.data.results;
           } else if (typeof response.data === "object") {
-            // oxirgi chora
             applications = Object.values(response.data).flat().filter(Boolean);
           }
         }
 
-        // Token orqali o'z arizalarni filtr qilish
         const token = localStorage.getItem("token");
         let myApplications = applications;
 
@@ -68,18 +65,15 @@ const Dashboard2 = () => {
                   app.applicant_id === userId ||
                   app.userId === userId ||
                   app.user_id === userId ||
-                  // ba'zi API'larda profileId sifatida kelishi mumkin
                   app.profileId === userId
                 );
               });
             }
           } catch (e) {
             console.warn("Token parse qilib bo'lmadi", e);
-            // xato bo'lsa ham barcha ma'lumotni ko'rsatamiz
           }
         }
 
-        // Haftalik statistika
         const monday = getThisMonday();
         const weekEnd = new Date(monday);
         weekEnd.setDate(monday.getDate() + 7);
@@ -105,7 +99,6 @@ const Dashboard2 = () => {
       } catch (err) {
         console.error("Dashboard ma'lumot xatosi:", err);
         setError("Ma'lumotlarni yuklab bo'lmadi");
-        // Test uchun realistik ma'lumot (o'chirib qo'yishingiz mumkin)
         if (isMounted) {
           setWeeklyStats([45, 120, 85, 210, 180, 95, 60]);
         }
@@ -123,8 +116,8 @@ const Dashboard2 = () => {
     };
   }, []);
 
-  const maxValue = Math.max(...weeklyStats, 1); // 0 bo'lmasligi uchun
-  const chartHeight = 100; // 165px konteyner ichida asosiy grafik balandligi
+  const maxValue = Math.max(...weeklyStats, 1);
+  const chartHeight = 100;
   const yAxisValues = [0, Math.round(maxValue * 0.5), maxValue];
 
   const currentDate = new Date().toLocaleDateString("en-GB", {
@@ -136,7 +129,6 @@ const Dashboard2 = () => {
   return (
     <div className="w-[550px] pt-6">
       <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-        {/* Header */}
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-1">
             Profile Views
@@ -152,7 +144,6 @@ const Dashboard2 = () => {
           <div className="text-sm text-gray-500">{currentDate}</div>
         </div>
 
-        {/* Chart */}
         <div className="relative">
           {loading ? (
             <div className="h-[165px] flex items-center justify-center gap-3 text-gray-500">
@@ -165,7 +156,6 @@ const Dashboard2 = () => {
             </div>
           ) : (
             <div className="flex h-[165px]">
-              {/* Y o'qi - to'g'ri joylashtirish */}
               <div className="w-12 flex flex-col justify-between text-xs text-gray-400 pr-2 text-right pb-2">
                 {yAxisValues.reverse().map((val, i) => (
                   <div key={i} className="h-[50px] flex items-end justify-end">
@@ -174,24 +164,21 @@ const Dashboard2 = () => {
                 ))}
               </div>
 
-              {/* Grafik maydoni */}
               <div className="flex-1 relative">
-                {/* Horizontal chiziqlar - 165px ga mos joylashtirish */}
                 <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
                   {[0, 1, 2].map((_, i) => (
                     <div
                       key={i}
                       className="border-t border-gray-100 w-full"
-                      style={{ 
-                        position: 'absolute',
-                        top: i === 0 ? '0px' : i === 1 ? '50px' : '100px',
-                        width: '100%'
+                      style={{
+                        position: "absolute",
+                        top: i === 0 ? "0px" : i === 1 ? "50px" : "100px",
+                        width: "100%",
                       }}
                     />
                   ))}
                 </div>
 
-                {/* Barlar - 165px ga moslangan */}
                 <div className="absolute inset-0 flex items-end justify-between px-2 pb-2">
                   {weekDays.map((day, i) => {
                     const value = weeklyStats[i];
@@ -203,20 +190,18 @@ const Dashboard2 = () => {
                         className="flex flex-col items-center group w-10"
                       >
                         <div className="relative w-full">
-                          {/* Grafik ustuni */}
                           <div
                             className={`w-full rounded-t-xl transition-all duration-300 ${
                               value > 0
                                 ? "bg-gradient-to-t from-indigo-600 to-purple-500 hover:brightness-110"
                                 : "bg-gray-100"
                             }`}
-                            style={{ 
+                            style={{
                               height: Math.max(height, 2),
-                              minHeight: '2px'
+                              minHeight: "2px",
                             }}
                           />
-                          
-                          {/* Tooltip - 165px ga mos */}
+
                           <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">
                             <div className="bg-gray-900 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
                               {value} view{value !== 1 ? "s" : ""}
@@ -225,7 +210,6 @@ const Dashboard2 = () => {
                           </div>
                         </div>
 
-                        {/* Kun nomlari */}
                         <div className="mt-2 text-sm font-medium text-gray-600">
                           {day}
                         </div>
