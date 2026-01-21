@@ -175,7 +175,7 @@ const ProfilePage = () => {
       <style>{spinnerStyle}</style>
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-xl p-4 mb-6 shadow-sm flex justify-between items-center">
-          <h1 className="text-xl font-bold text-gray-800">My profile</h1>
+          <h1 className="text-xl font-bold text-[#505151]">My profile</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -255,7 +255,6 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* RIGHT SIDE: SKILLS, LANGUAGES & ABOUT */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-[24px] p-8 shadow-sm relative border border-gray-50">
               <button
@@ -318,7 +317,6 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* MODALS */}
       {activeModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-[24px] w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">

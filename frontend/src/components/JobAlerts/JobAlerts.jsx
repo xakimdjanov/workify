@@ -66,9 +66,7 @@ export default function JobAlerts() {
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 mb-8 overflow-hidden">
           <div className="p-6 border-b border-gray-50 flex justify-between items-center">
-            <h2 className="text-xl font-black text-[#163D5C]">
-              Job Alerts
-            </h2>
+            <h2 className="text-xl font-bold text-[#505151]">Job Alerts</h2>
             <button onClick={() => setIsFilterExpanded(!isFilterExpanded)}>
               <FaChevronDown
                 className={`transition-transform ${

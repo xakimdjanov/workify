@@ -37,7 +37,7 @@ const Faq = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] py-6 md:py-10 px-4 font-sans text-[#1E293B]">
+    <div className="min-h-screen bg-[#F5F5F5] py-6 md:py-10 px-4 font-sans text-[#505151] font-bold">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl py-3 px-6 md:py-4 md:px-8 mb-8 shadow-sm border border-gray-100">
           <h1 className="text-xl md:text-2xl font-bold">FAQ</h1>
