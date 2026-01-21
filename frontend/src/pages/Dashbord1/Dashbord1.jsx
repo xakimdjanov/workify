@@ -1,9 +1,8 @@
-// Dashboard1.jsx - responsive down to 400px
 import React, { useEffect, useState } from "react";
 import { talentApi } from "../../services/api";
 import { jwtDecode } from "jwt-decode";
 
-const Dashboard1 = () => {
+const Dashbord1 = () => {
   const [percent, setPercent] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -13,11 +12,16 @@ const Dashboard1 = () => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
+        // token decode
         const { id } = jwtDecode(token);
+
+        // real API
         const res = await talentApi.getById(id);
         const data = res.data;
 
         const values = Object.values(data);
+
+        // id, createdAt, updatedAt hisobga olinmaydi
         const filtered = values.filter(
           (v) =>
             typeof v !== "number" &&
@@ -29,18 +33,23 @@ const Dashboard1 = () => {
           if (v === null) return false;
           if (v === "") return false;
 
+          // string bo‘lsa ("[]", "{}")
           if (typeof v === "string") {
             if (v === "[]" || v === "{}") return false;
             return true;
           }
 
+          // array bo‘lsa
           if (Array.isArray(v)) return v.length > 0;
+
+          // object bo‘lsa
           if (typeof v === "object") return Object.keys(v).length > 0;
 
           return true;
         });
 
         const completion = Math.round((filled.length / filtered.length) * 100);
+
         setPercent(Math.min(completion, 100));
       } catch (err) {
         console.error(err);
@@ -52,47 +61,25 @@ const Dashboard1 = () => {
     loadProfile();
   }, []);
 
+  // rangni foizga qarab aniqlash
   const getProgressColor = (percentage) => {
     if (percentage <= 30) return "#f7481d";
     if (percentage <= 70) return "#FB959D";
     return "#5ABF89";
   };
 
-  // Responsive CircleProgress for 400px and up
-  const CircleProgress = ({ percentage }) => {
-    const [size, setSize] = useState(100);
-
-    useEffect(() => {
-      const handleResize = () => {
-        if (window.innerWidth < 400) {
-          setSize(90);
-        } else if (window.innerWidth < 500) {
-          setSize(100);
-        } else if (window.innerWidth < 640) {
-          setSize(110);
-        } else if (window.innerWidth < 768) {
-          setSize(120);
-        } else if (window.innerWidth < 1024) {
-          setSize(130);
-        } else {
-          setSize(144);
-        }
-      };
-
-      handleResize();
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    const strokeWidth = Math.max(12, size * 0.1); // Responsive stroke width
+  // SVG Circle Progress
+  const CircleProgress = ({ percentage, size = 144, strokeWidth = 16 }) => {
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (percentage / 100) * circumference;
+
     const progressColor = getProgressColor(percentage);
 
     return (
       <div className="relative">
         <svg width={size} height={size} className="-rotate-90">
+          {/* Background */}
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -101,6 +88,8 @@ const Dashboard1 = () => {
             strokeWidth={strokeWidth}
             fill="none"
           />
+
+          {/* Progress */}
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -115,39 +104,29 @@ const Dashboard1 = () => {
           />
         </svg>
 
+        {/* Center text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-          <p className="text-xl xs:text-2xl sm:text-3xl font-bold">{percentage}%</p>
-          <p className="text-[10px] xs:text-xs sm:text-sm uppercase tracking-wider mt-0.5 xs:mt-1">
-            Complete
-          </p>
+          <p className="text-3xl font-bold">{percentage}%</p>
+          <p className="text-sm uppercase tracking-wider">Complete</p>
         </div>
       </div>
     );
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-[250px] xs:h-[280px] sm:h-[350px]">
-        <div className="animate-spin h-6 w-6 xs:h-7 xs:w-7 border-3 xs:border-4 border-blue-500 border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
+  if (loading) return <p>Yuklanmoqda...</p>;
 
   return (
-    <div className="w-full">
-      <div className="pt-0 lg:pt-6">
-        <div className="bg-gradient-to-b from-[#163D5C] to-[#6D89CF] w-full max-w-[280px] xs:max-w-[300px] sm:max-w-[350px] mx-auto lg:mx-0 
-                      h-[250px] xs:h-[280px] sm:h-[350px] rounded-xl flex flex-col items-center justify-center px-3 xs:px-4">
-          <h1 className="text-white text-base xs:text-lg sm:text-xl font-bold text-center">
-            Profile completed
-          </h1>
+    <div>
+      <div className="pt-6">
+        <div className="bg-gradient-to-b from-[#163D5C] to-[#6D89CF] w-[350px] h-[350px] rounded-xl flex flex-col items-center justify-center">
+          <h1 className="text-white text-xl font-bold">Profile completed</h1>
 
-          <div className="py-4 xs:py-5 sm:py-6 md:py-8">
+          <div className="py-8">
             <CircleProgress percentage={percent} />
           </div>
 
-          <p className="text-white text-[11px] xs:text-xs sm:text-sm text-center px-2 xs:px-3 sm:px-4 leading-tight xs:leading-snug">
-            Complete all parts of your profile and <br className="hidden xs:block" />
+          <p className="text-white text-sm text-center">
+            Complete all parts of your profile and <br />
             increase your chances of finding a job
           </p>
         </div>
@@ -156,4 +135,4 @@ const Dashboard1 = () => {
   );
 };
 
-export default Dashboard1;
+export default Dashbord1;

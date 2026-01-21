@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { talentApi } from "../../services/api"; // API xizmati
-import { jwtDecode } from "jwt-decode"; // Tokenni o'qish uchun
+import { talentApi, applicationApi } from "../../services/api"; 
+import { jwtDecode } from "jwt-decode";
 import { 
   HiChartBar, 
   HiOutlineUserCircle, 
   HiOutlineBell, 
   HiOutlineRefresh, 
-  HiOutlineHome, 
   HiOutlineCog, 
   HiOutlineChatAlt2, 
   HiOutlineUsers 
@@ -16,16 +15,25 @@ import {
 const Sidebar = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [appCount, setAppCount] = useState(0);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchSidebarData = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
 
         const decoded = jwtDecode(token);
-        const res = await talentApi.getById(decoded.id);
-        setUser(res.data);
+        
+        const [userRes, appRes] = await Promise.all([
+          talentApi.getById(decoded.id),
+          applicationApi.getAll()
+        ]);
+
+        setUser(userRes.data);
+        const apps = Array.isArray(appRes.data) ? appRes.data : (appRes.data?.data || []);
+        setAppCount(apps.length);
+
       } catch (err) {
         console.error("Sidebar ma'lumotlarini yuklashda xatolik:", err);
       } finally {
@@ -33,7 +41,7 @@ const Sidebar = () => {
       }
     };
 
-    fetchUserData();
+    fetchSidebarData();
   }, []);
 
   return (
@@ -42,7 +50,6 @@ const Sidebar = () => {
       {/* --- AVATAR VA ISM QISMI --- */}
       <div className="hidden md:flex items-center gap-3 px-8 mb-8">
         {loading ? (
-          // Yuklanayotgan vaqtdagi ko'rinish (Skeleton)
           <div className="flex items-center gap-3 animate-pulse">
             <div className="w-11 h-11 rounded-full bg-gray-200"></div>
             <div className="space-y-2">
@@ -51,14 +58,13 @@ const Sidebar = () => {
             </div>
           </div>
         ) : (
-          // Ma'lumot kelgandagi ko'rinish
           <>
             <img
               src={user?.image || "https://via.placeholder.com/150"}
               alt="avatar"
               className="w-11 h-11 rounded-full object-cover border border-gray-100 shadow-sm"
             />
-            <div className="overflow-hidden">
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
               <h3 className="font-bold text-[#334155] text-[14px] truncate">
                 {user?.first_name} {user?.last_name?.charAt(0)}.
               </h3>
@@ -71,28 +77,42 @@ const Sidebar = () => {
       </div>
 
       <nav className="flex w-full justify-around md:justify-start md:flex-col md:px-5 gap-1">
+        {/* 1. Dashboard */}
         <div className="md:order-1 w-full">
           <MenuItem to="/dashboard" icon={<HiChartBar />} label="Dashboard" />
         </div>
-        <div className="md:order-5 w-full">
-          <MenuItem to="/" icon={<HiOutlineHome />} label="Home" />
-        </div>
-        <div className="md:order-4 w-full">
-          <MenuItem to="/matches" icon={<HiOutlineRefresh />} label="Job matches" />
-        </div>
-        <div className="md:order-3 w-full">
-          <MenuItem to="/alerts" icon={<HiOutlineBell />} label="Job alerts" badge="13" />
-        </div>
+
+        {/* 2. My Profile (Dashboarddan so'ng) */}
         <div className="md:order-2 w-full">
           <MenuItem to="/profile" icon={<HiOutlineUserCircle />} label="My profile" />
         </div>
-        <div className="md:order-6 w-full">
+
+        {/* 3. Job Alerts (My Profiledan so'ng) */}
+        <div className="md:order-3 w-full">
+          <MenuItem 
+            to="/alerts" 
+            icon={<HiOutlineBell />} 
+            label="Job alerts" 
+            badge={appCount > 0 ? appCount : null} 
+          />
+        </div>
+
+        {/* 4. Job Matches (Job Alertsdan so'ng) */}
+        <div className="md:order-4 w-full">
+          <MenuItem to="/matches" icon={<HiOutlineRefresh />} label="Job matches" />
+        </div>
+
+        {/* 5. Settings */}
+        <div className="md:order-5 w-full">
           <MenuItem to="/settings" icon={<HiOutlineCog />} label="Settings" />
         </div>
-        <div className="hidden md:block md:order-7 w-full">
+
+        {/* FAQ va Contacts (Faqat Desktop uchun) */}
+        <div className="hidden md:block md:order-6 w-full">
           <MenuItem to="/faq" icon={<HiOutlineChatAlt2 />} label="FAQ" />
         </div>
-        <div className="hidden md:block md:order-8 w-full">
+
+        <div className="hidden md:block md:order-7 w-full">
           <MenuItem to="/contacts" icon={<HiOutlineUsers />} label="Contacts" />
         </div>
       </nav>
