@@ -302,7 +302,7 @@ const Dashboard3 = () => {
   };
 
   return (
-    <div className="w-full mx-auto py-4 sm:py-6">
+    <div className="w-full mx-auto py-4 sm:py-6 pb-16">
       <div className="bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-100">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8 md:mb-10">
