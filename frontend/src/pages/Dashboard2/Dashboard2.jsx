@@ -202,7 +202,7 @@ const Dashboard2 = () => {
   };
 
   return (
-    <div className="w-full max-w-[550px] mx-auto lg:max-w-none lg:w-auto lg:flex-1 pt-0 sm:pt-3 lg:pt-6">
+    <div className="w-full mx-auto lg:max-w-none lg:w-auto lg:flex-1 pt-0 sm:pt-3 lg:pt-6">
       <div className="bg-white rounded-xl shadow-md p-4 sm:p-5 lg:p-6 border border-gray-100">
         {/* Header */}
         <div className="text-center mb-4 sm:mb-5 lg:mb-6">

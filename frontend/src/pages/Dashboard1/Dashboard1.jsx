@@ -136,7 +136,7 @@ const Dashboard1 = () => {
   return (
     <div className="w-full">
       <div className="pt-0 lg:pt-6">
-        <div className="bg-gradient-to-b from-[#163D5C] to-[#6D89CF] w-full max-w-[280px] xs:max-w-[300px] sm:max-w-[350px] mx-auto lg:mx-0 
+        <div className="bg-gradient-to-b from-[#163D5C] to-[#6D89CF] w-full lg:max-w-[350px] mx-auto lg:mx-0 
                       h-[250px] xs:h-[280px] sm:h-[350px] rounded-xl flex flex-col items-center justify-center px-3 xs:px-4">
           <h1 className="text-white text-base xs:text-lg sm:text-xl font-bold text-center">
             Profile completed
