@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 import { talentApi } from "../../services/api";
 import {
   FaBriefcase,
@@ -10,7 +11,6 @@ import {
   FaDollarSign,
   FaFlag,
   FaCity,
-  FaChevronDown,
   FaHome,
 } from "react-icons/fa";
 import Header from "../Header/Header";
@@ -24,8 +24,14 @@ export default function RegistrationFormStepThree() {
   const [minimumSalary, setMinimumSalary] = useState("");
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
-  const [showWorkplaceDropdown, setShowWorkplaceDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  // Xatolik holatlari uchun state
+  const [errors, setErrors] = useState({
+    workplaceType: false,
+    minimumSalary: false,
+    city: false,
+  });
 
   useEffect(() => {
     const savedData = localStorage.getItem("talent_step3");
@@ -39,7 +45,44 @@ export default function RegistrationFormStepThree() {
     }
   }, []);
 
+  // Input o'zgarganda xatoliklarni tozalash
+  useEffect(() => {
+    if (errors.workplaceType && workplaceType) {
+      setErrors(prev => ({ ...prev, workplaceType: false }));
+    }
+    if (errors.minimumSalary && minimumSalary && Number(minimumSalary) > 0) {
+      setErrors(prev => ({ ...prev, minimumSalary: false }));
+    }
+    if (errors.city && city.trim()) {
+      setErrors(prev => ({ ...prev, city: false }));
+    }
+  }, [workplaceType, minimumSalary, city, errors]);
+
   const handleFinish = async () => {
+    // Validatsiya
+    const newErrors = {
+      workplaceType: !workplaceType,
+      minimumSalary: !minimumSalary || Number(minimumSalary) <= 0,
+      city: !city.trim(),
+    };
+
+    setErrors(newErrors);
+
+    if (newErrors.workplaceType) {
+      toast.error("Workplace type tanlang");
+      return;
+    }
+    
+    if (newErrors.minimumSalary) {
+      toast.error("Minimum salary kiriting");
+      return;
+    }
+    
+    if (newErrors.city) {
+      toast.error("City kiriting");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -59,7 +102,7 @@ export default function RegistrationFormStepThree() {
       console.log(allData);
 
       if (!allData.email) {
-        alert("Email topilmadi. Iltimos 1-qadamni qayta to‘ldiring.");
+        toast.error("Email topilmadi. Iltimos 1-qadamni qayta to'ldiring.");
         setLoading(false);
         return;
       }
@@ -92,12 +135,15 @@ export default function RegistrationFormStepThree() {
         localStorage.removeItem("talent_step2");
         localStorage.removeItem("talent_step3");
 
-        alert("Muvaffaqiyatli ro‘yxatdan o‘tdingiz iltimos endi login qiling!");
-        navigate("/signin");
+        toast.success("Muvaffaqiyatli ro'yxatdan o'tdingiz! Endi login qiling.");
+        
+        setTimeout(() => {
+          navigate("/signin");
+        }, 2000);
       }
     } catch (error) {
       console.error("Backend xatosi:", error.response?.data);
-      alert(
+      toast.error(
         `Xatolik: ${
           error.response?.data?.message || "Serverda muammo yuz berdi"
         }`
@@ -109,6 +155,34 @@ export default function RegistrationFormStepThree() {
 
   return (
     <div>
+      {/* Toast Container */}
+      <Toaster
+        toastOptions={{
+          duration: 4000,
+          position: "top-right",
+          style: {
+            fontSize: '14px',
+            fontWeight: '500',
+            borderRadius: '8px',
+            padding: '12px 16px',
+          },
+          success: {
+            style: {
+              background: '#f0fdf4',
+              color: '#166534',
+              border: '1px solid #86efac',
+            },
+          },
+          error: {
+            style: {
+              background: '#fef2f2',
+              color: '#991b1b',
+              border: '1px solid #fca5a5',
+            },
+          },
+        }}
+      />
+
       <Header />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 md:p-8">
         <div className="bg-white rounded-2xl shadow-lg w-full max-w-[388px] md:max-w-[988px] p-6 md:p-12">
@@ -175,11 +249,15 @@ export default function RegistrationFormStepThree() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
-                  Workplace type
+                  Workplace type *
                 </label>
-                <div className="relative bg-gray-100 rounded-[50px] border border-gray-200 flex overflow-hidden">
+                <div className={`relative bg-gray-100 rounded-[50px] border flex overflow-hidden ${
+                  errors.workplaceType ? "border-red-500" : "border-gray-200"
+                }`}>
                   <div
-                    className={`absolute top-0 left-0 h-full w-1/3 bg-white rounded-[50px] shadow-md transition-all duration-300`}
+                    className={`absolute top-0 left-0 h-full w-1/3 bg-white rounded-[50px] shadow-md transition-all duration-300 ${
+                      errors.workplaceType ? "bg-red-50" : ""
+                    }`}
                     style={{
                       transform: `translateX(${
                         ["Onsite", "Remote", "Hybrid"].indexOf(workplaceType) *
@@ -193,8 +271,10 @@ export default function RegistrationFormStepThree() {
                       key={type}
                       onClick={() => setWorkplaceType(type)}
                       className={`flex-1 flex items-center justify-center gap-2 py-3 relative z-10 font-semibold transition-colors duration-200
-        ${workplaceType === type ? "text-[#163D5C]" : "text-gray-400"}
-      `}
+                        ${workplaceType === type ? 
+                          errors.workplaceType ? "text-red-600" : "text-[#163D5C]" 
+                          : "text-gray-400"}
+                      `}
                     >
                       {type === "Onsite" && <FaBuilding />}
                       {type === "Remote" && <FaHome />}
@@ -203,43 +283,66 @@ export default function RegistrationFormStepThree() {
                     </button>
                   ))}
                 </div>
+                {errors.workplaceType && (
+                  <p className="mt-1 text-sm text-red-600">Workplace type tanlang</p>
+                )}
               </div>
 
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
-                  Minimum salary
+                  Minimum salary *
                 </label>
                 <div className="relative">
-                  <FaDollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
+                  <FaDollarSign className={`absolute left-4 top-1/2 -translate-y-1/2 ${
+                    errors.minimumSalary ? "text-red-500" : "text-[#163D5C]"
+                  }`} />
                   <input
                     type="number"
                     value={minimumSalary}
                     onChange={(e) => setMinimumSalary(e.target.value)}
-                    className="w-full pl-12 pr-10 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#163D5C] outline-none"
+                    className={`w-full pl-12 pr-10 py-3 border rounded-lg focus:ring-2 outline-none ${
+                      errors.minimumSalary 
+                        ? "border-red-500 focus:ring-red-300 bg-red-50" 
+                        : "border-gray-200 focus:ring-[#163D5C]"
+                    }`}
                     placeholder="Enter amount"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                  <span className={`absolute right-4 top-1/2 -translate-y-1/2 ${
+                    errors.minimumSalary ? "text-red-500" : "text-gray-400"
+                  }`}>
                     $
                   </span>
                 </div>
+                {errors.minimumSalary && (
+                  <p className="mt-1 text-sm text-red-600">Minimum salary kiriting</p>
+                )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
-                  City
+                  City *
                 </label>
                 <div className="relative">
-                  <FaCity className="absolute left-4 top-1/2 -translate-y-1/2 text-[#163D5C]" />
+                  <FaCity className={`absolute left-4 top-1/2 -translate-y-1/2 ${
+                    errors.city ? "text-red-500" : "text-[#163D5C]"
+                  }`} />
                   <input
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#163D5C] outline-none"
+                    className={`w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 outline-none ${
+                      errors.city 
+                        ? "border-red-500 focus:ring-red-300 bg-red-50" 
+                        : "border-gray-200 focus:ring-[#163D5C]"
+                    }`}
                     placeholder="Enter city"
                   />
                 </div>
+                {errors.city && (
+                  <p className="mt-1 text-sm text-red-600">City kiriting</p>
+                )}
               </div>
             </div>
 

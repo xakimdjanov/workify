@@ -9,6 +9,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 
@@ -76,6 +77,9 @@ export default function RegistrationFormStepTwo() {
       setskils([...skils, { skill: "", experience_years: "" }]);
       setShowSkillDropdown([...showSkillDropdown, false]);
       setShowExpDropdown([...showExpDropdown, false]);
+      toast.success("Skill qo'shildi");
+    } else {
+      toast.error("Maksimum 5 ta skill qo'shish mumkin");
     }
   };
 
@@ -84,6 +88,7 @@ export default function RegistrationFormStepTwo() {
       setskils(skils.filter((_, i) => i !== index));
       setShowSkillDropdown(showSkillDropdown.filter((_, i) => i !== index));
       setShowExpDropdown(showExpDropdown.filter((_, i) => i !== index));
+      toast("Skill o'chirildi");
     }
   };
 
@@ -97,6 +102,9 @@ export default function RegistrationFormStepTwo() {
     if (languages.length < 3) {
       setLanguages([...languages, { language: "", level: "" }]);
       setShowLevelDropdown([...showLevelDropdown, false]);
+      toast.success("Til qo'shildi");
+    } else {
+      toast.error("Maksimum 3 ta til qo'shish mumkin");
     }
   };
 
@@ -104,6 +112,7 @@ export default function RegistrationFormStepTwo() {
     if (languages.length > 1) {
       setLanguages(languages.filter((_, i) => i !== index));
       setShowLevelDropdown(showLevelDropdown.filter((_, i) => i !== index));
+      toast("Til o'chirildi");
     }
   };
 
@@ -121,6 +130,36 @@ export default function RegistrationFormStepTwo() {
   };
 
   const handleNext = () => {
+    // Validate required fields
+    if (!occupation.trim()) {
+      toast.error("Occupationni kiriting");
+      return;
+    }
+    
+    if (!specialty.trim()) {
+      toast.error("Specialtyni tanlang");
+      return;
+    }
+    
+    if (specialty === "Other" && !customSpecialty.trim()) {
+      toast.error("Specialtyni kiriting");
+      return;
+    }
+
+    // Check if at least one skill has both skill name and experience
+    const hasValidSkill = skils.some(s => s.skill.trim() && s.experience_years);
+    if (!hasValidSkill) {
+      toast.error("Kamida bitta skill to'liq to'ldirilishi kerak");
+      return;
+    }
+
+    // Check if at least one language has both language name and level
+    const hasValidLanguage = languages.some(l => l.language.trim() && l.level);
+    if (!hasValidLanguage) {
+      toast.error("Hech bo'lmaganda o'z tilingizni kiriting");
+      return;
+    }
+
     const finalSpecialty = specialty === "Other" ? customSpecialty : specialty;
 
     const step2Data = {
@@ -133,11 +172,44 @@ export default function RegistrationFormStepTwo() {
     };
 
     localStorage.setItem("talent_step2", JSON.stringify(step2Data));
-    navigate("/registration/step-3");
+    
+    toast.success("Ma'lumotlar saqlandi! Keyingi bosqichga o'tilmoqda...");
+    
+    setTimeout(() => {
+      navigate("/registration/step-3");
+    }, 1500);
   };
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Toast Container */}
+      <Toaster
+        toastOptions={{
+          duration: 4000,
+          position: "top-right",
+          style: {
+            fontSize: '14px',
+            fontWeight: '500',
+            borderRadius: '8px',
+            padding: '12px 16px',
+          },
+          success: {
+            style: {
+              background: '#f0fdf4',
+              color: '#166534',
+              border: '1px solid #86efac',
+            },
+          },
+          error: {
+            style: {
+              background: '#fef2f2',
+              color: '#991b1b',
+              border: '1px solid #fca5a5',
+            },
+          },
+        }}
+      />
+
       <Header />
       <main className="flex-grow bg-gray-50 flex items-center justify-center p-4 md:p-10">
         <div className="bg-white rounded-3xl shadow-xl w-full max-w-4xl p-6 md:p-12">
