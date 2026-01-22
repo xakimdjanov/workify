@@ -49,7 +49,7 @@ const Sidebar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.clear(); // Hamma narsani tozalaydi
     navigate("/");
   };
 
@@ -113,7 +113,8 @@ const Sidebar = () => {
             />
           </div>
 
-          <div className="md:mt-auto md:pt-4">
+          {/* FAQ va Contacts kabi Log out ham faqat DESKTOPda ko'rinadi */}
+          <div className="hidden md:block md:mt-auto md:pt-4">
             <button
               onClick={() => setIsModalOpen(true)}
               className="flex flex-col md:flex-row items-center gap-1 md:gap-4 px-3 md:px-6 py-2 md:py-[14px] rounded-xl md:rounded-[14px] transition-all duration-200 text-[10px] md:text-[16px] font-bold text-red-500 hover:bg-red-50 w-full"
@@ -128,11 +129,12 @@ const Sidebar = () => {
       </aside>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform transition-all">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl animate-in fade-in zoom-in duration-200">
             <h3 className="text-xl font-bold text-[#334155] mb-2">Chiqish</h3>
             <p className="text-gray-500 mb-6">
-              Rostdan ham tizimdan chiqmoqchimisiz?
+              Rostdan ham tizimdan chiqmoqchimisiz? Barcha ma'lumotlar
+              tozalanadi.
             </p>
             <div className="flex gap-3">
               <button
@@ -143,7 +145,7 @@ const Sidebar = () => {
               </button>
               <button
                 onClick={handleLogout}
-                className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-200"
+                className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition-colors"
               >
                 Ha, chiqish
               </button>
