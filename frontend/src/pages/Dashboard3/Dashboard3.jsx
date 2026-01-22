@@ -16,16 +16,31 @@ const Dashboard3 = () => {
   const [activeTab, setActiveTab] = useState("week");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1024,
+  );
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const weekDaysShort = ["M", "T", "W", "T", "F", "S", "S"];
-  const monthNamesShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const weekDaysShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const monthNamesShort = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   useEffect(() => {
     let isMounted = true;
@@ -38,6 +53,7 @@ const Dashboard3 = () => {
         const res = await applicationApi.getAll();
         let applications = [];
 
+        // Ma'lumotlarni turli strukturalardan chiqarib olish
         if (res?.data) {
           if (Array.isArray(res.data)) {
             applications = res.data;
@@ -45,15 +61,24 @@ const Dashboard3 = () => {
             applications = res.data.applications;
           } else if (Array.isArray(res.data.results)) {
             applications = res.data.results;
+          } else if (res.data.data && Array.isArray(res.data.data)) {
+            applications = res.data.data;
           } else if (typeof res.data === "object") {
-            applications = Object.values(res.data).flat().filter(Boolean);
+            // Objectdan arrayga convert qilish
+            applications = Object.values(res.data)
+              .flat()
+              .filter(Array.isArray)
+              .flat();
           }
         }
 
+        console.log("Total applications fetched:", applications.length);
+
+        // Token orqali foydalanuvchi ID sini olish
         const token = localStorage.getItem("token");
         let myApplications = applications;
 
-        if (token) {
+        if (token && applications.length > 0) {
           try {
             const payload = JSON.parse(atob(token.split(".")[1]));
             const userId =
@@ -66,16 +91,25 @@ const Dashboard3 = () => {
               payload.applicant_id;
 
             if (userId) {
-              myApplications = applications.filter((app) =>
-                [
-                  app.talentId,
-                  app.talent_id,
-                  app.applicantId,
-                  app.applicant_id,
-                  app.userId,
-                  app.user_id,
-                  app.profileId,
-                ].includes(userId)
+              myApplications = applications.filter(
+                (app) =>
+                  app &&
+                  [
+                    app.talentId,
+                    app.talent_id,
+                    app.applicantId,
+                    app.applicant_id,
+                    app.userId,
+                    app.user_id,
+                    app.profileId,
+                    app.id,
+                  ]
+                    .map(String)
+                    .includes(String(userId)),
+              );
+              console.log(
+                "Filtered applications for user:",
+                myApplications.length,
               );
             }
           } catch (e) {
@@ -83,89 +117,95 @@ const Dashboard3 = () => {
           }
         }
 
-        // Haftalik ma'lumotlar
+        // Haftalik ma'lumotlar tayyorlash
         const now = new Date();
-        const dayOfWeek = now.getDay();
-        const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-        const monday = new Date(now);
-        monday.setDate(now.getDate() - diff);
-        monday.setHours(0, 0, 0, 0);
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(
+          now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1),
+        );
+        startOfWeek.setHours(0, 0, 0, 0);
 
-        const weekEnd = new Date(monday);
-        weekEnd.setDate(monday.getDate() + 7);
+        // Hafta kunlari uchun array
+        const weekData = [];
+        for (let i = 0; i < 7; i++) {
+          const day = new Date(startOfWeek);
+          day.setDate(startOfWeek.getDate() + i);
 
-        const weekCounts = new Array(7).fill(0);
+          const dayStart = new Date(day);
+          const dayEnd = new Date(day);
+          dayEnd.setHours(23, 59, 59, 999);
 
-        // Oylik ma'lumotlar
+          let dayCount = 0;
+          if (myApplications.length > 0) {
+            dayCount = myApplications.filter((app) => {
+              if (!app?.createdAt) return false;
+              const appDate = new Date(app.createdAt);
+              return appDate >= dayStart && appDate <= dayEnd;
+            }).length;
+          }
+
+          weekData.push({
+            day: weekDaysShort[i],
+            views: dayCount,
+            fullDate: day.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            }),
+          });
+        }
+
+        // Oylik ma'lumotlar tayyorlash
         const currentYear = now.getFullYear();
-        const monthCounts = new Array(12).fill(0);
+        const monthData = [];
 
-        myApplications.forEach((app) => {
-          if (!app?.createdAt) return;
-          const created = new Date(app.createdAt);
+        for (let i = 0; i < 12; i++) {
+          const monthStart = new Date(currentYear, i, 1);
+          const monthEnd = new Date(currentYear, i + 1, 0, 23, 59, 59, 999);
 
-          // Haftalik statistikaga qo'shish
-          if (created >= monday && created < weekEnd) {
-            const diffDays = Math.floor(
-              (created - monday) / (1000 * 60 * 60 * 24)
-            );
-            if (diffDays >= 0 && diffDays < 7) {
-              weekCounts[diffDays]++;
-            }
+          let monthCount = 0;
+          if (myApplications.length > 0) {
+            monthCount = myApplications.filter((app) => {
+              if (!app?.createdAt) return false;
+              const appDate = new Date(app.createdAt);
+              return appDate >= monthStart && appDate <= monthEnd;
+            }).length;
           }
 
-          // Oylik statistikaga qo'shish
-          const year = created.getFullYear();
-          if (year === currentYear) {
-            const month = created.getMonth();
-            monthCounts[month]++;
-          }
-        });
-
-        const formattedWeekData = weekDaysShort.map((day, index) => ({
-          day,
-          views: weekCounts[index],
-        }));
-
-        const formattedMonthData = monthNamesShort.map((month, index) => ({
-          day: month,
-          views: monthCounts[index],
-        }));
+          monthData.push({
+            day: monthNamesShort[i],
+            views: monthCount,
+            monthIndex: i,
+          });
+        }
 
         if (isMounted) {
           setChartData({
-            week: formattedWeekData,
-            month: formattedMonthData
+            week: weekData,
+            month: monthData,
           });
+          console.log("Chart data set:", { week: weekData, month: monthData });
         }
       } catch (err) {
         console.error("Dashboard xatosi:", err);
         setError("Ma'lumotlarni yuklab bo'lmadi");
+
+        // Fallback demo ma'lumotlar
         if (isMounted) {
+          const demoWeek = weekDaysShort.map((day, i) => ({
+            day,
+            views: Math.floor(Math.random() * 100) + 20,
+            fullDate: `Day ${i + 1}`,
+          }));
+
+          const demoMonth = monthNamesShort.map((month, i) => ({
+            day: month,
+            views: Math.floor(Math.random() * 200) + 50,
+            monthIndex: i,
+          }));
+
           setChartData({
-            week: [
-              { day: "M", views: 12 },
-              { day: "T", views: 45 },
-              { day: "W", views: 78 },
-              { day: "T", views: 33 },
-              { day: "F", views: 92 },
-              { day: "S", views: 145 },
-              { day: "S", views: 64 },
-            ],
-            month: [
-              { day: "Jan", views: 120 },
-              { day: "Feb", views: 150 },
-              { day: "Mar", views: 180 },
-              { day: "Apr", views: 200 },
-              { day: "May", views: 220 },
-              { day: "Jun", views: 240 },
-              { day: "Jul", views: 260 },
-              { day: "Aug", views: 280 },
-              { day: "Sep", views: 250 },
-              { day: "Oct", views: 230 },
-              { day: "Nov", views: 210 },
-              { day: "Dec", views: 190 },
-            ]
+            week: demoWeek,
+            month: demoMonth,
           });
         }
       } finally {
@@ -184,165 +224,194 @@ const Dashboard3 = () => {
     return activeTab === "week" ? chartData.week : chartData.month;
   }, [activeTab, chartData]);
 
-  const CustomTooltip = ({ active, payload }) => {
+  // Custom Tooltip komponenti
+  const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const value = payload[0].value;
+      const dataPoint = payload[0].payload;
+
       return (
-        <div className="relative mb-6 xs:mb-8">
-          <div className="bg-[#5ABF89] text-white text-[10px] xs:text-xs sm:text-sm font-semibold px-2 py-1.5 xs:px-3 xs:py-2 sm:px-4 sm:py-2.5 rounded-lg xs:rounded-xl shadow-xl whitespace-nowrap">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-xl p-2 xs:p-3">
+          <p className="text-xs xs:text-sm font-semibold text-gray-800">
+            {activeTab === "week" ? dataPoint.fullDate : dataPoint.day}
+          </p>
+          <p className="text-xs xs:text-sm text-[#5ABF89] font-bold">
             {value} job offer{value !== 1 ? "s" : ""}
-          </div>
-          <div className="w-2 h-2 xs:w-3 xs:h-3 sm:w-4 sm:h-4 bg-[#5ABF89] rotate-45 mx-auto -mt-1 xs:-mt-1.5 sm:-mt-2" />
+          </p>
         </div>
       );
     }
     return null;
   };
 
+  // Sana ko'rsatish
   const getDisplayDate = () => {
     const now = new Date();
     if (activeTab === "week") {
-      const dayOfWeek = now.getDay();
-      const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-      const monday = new Date(now);
-      monday.setDate(now.getDate() - diff);
-      const sunday = new Date(monday);
-      sunday.setDate(monday.getDate() + 6);
-      
-      return `${monday.getDate()} ${monday.toLocaleDateString('en-GB', { month: 'short' })} - ${sunday.getDate()} ${sunday.toLocaleDateString('en-GB', { month: 'short' })} ${monday.getFullYear()}`;
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(
+        now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1),
+      );
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+      const format = (date) =>
+        date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+
+      return `${format(startOfWeek)} - ${format(endOfWeek)}`;
     } else {
-      return `January - December ${now.getFullYear()}`;
+      return now.getFullYear();
     }
   };
 
-  // Get responsive chart height
+  // Responsive chart o'lchamlari
   const getChartHeight = () => {
-    if (windowWidth < 400) return 180;
-    if (windowWidth < 500) return 200;
-    if (windowWidth < 640) return 220;
-    if (windowWidth < 768) return 260;
-    if (windowWidth < 1024) return 300;
+    if (windowWidth < 400) return 220;
+    if (windowWidth < 500) return 240;
+    if (windowWidth < 640) return 260;
+    if (windowWidth < 768) return 280;
+    if (windowWidth < 1024) return 320;
     return 350;
   };
 
-  // Get Y-axis width based on screen size
-  const getYAxisWidth = () => {
-    if (windowWidth < 400) return 20;
-    if (windowWidth < 500) return 25;
-    if (windowWidth < 768) return 30;
-    return 35;
+  // Responsive chart settings
+  const chartSettings = {
+    margin: {
+      top: 20,
+      right: windowWidth < 400 ? 5 : windowWidth < 768 ? 10 : 20,
+      left: windowWidth < 400 ? -15 : windowWidth < 768 ? -10 : 0,
+      bottom: windowWidth < 400 ? 5 : windowWidth < 768 ? 10 : 15,
+    },
+    fontSize: {
+      xAxis: windowWidth < 400 ? 10 : windowWidth < 768 ? 11 : 12,
+      yAxis: windowWidth < 400 ? 10 : windowWidth < 768 ? 11 : 12,
+    },
+    strokeWidth: windowWidth < 400 ? 2 : windowWidth < 768 ? 2.5 : 3,
+    dotRadius: windowWidth < 400 ? 3 : windowWidth < 768 ? 4 : 5,
+    activeDotRadius: windowWidth < 400 ? 5 : windowWidth < 768 ? 6 : 8,
   };
 
-  // Get X-axis padding based on active tab
-  const getXPadding = () => {
-    if (activeTab === "month") {
-      return windowWidth < 400 ? -5 : 0;
-    }
-    return windowWidth < 400 ? 0 : (windowWidth < 500 ? 5 : 12);
+  // Chart y o'qi uchun max qiymat
+  const getMaxValue = () => {
+    if (!activeData || activeData.length === 0) return 100;
+    const max = Math.max(...activeData.map((item) => item.views));
+    return Math.ceil(max * 1.2); // 20% ortiqcha joy qoldiramiz
   };
 
   return (
-    <div className="w-full mx-auto xs:px-2 py-3 xs:py-4 sm:py-6">
-      <div className="bg-white rounded-xl xs:rounded-2xl sm:rounded-3xl shadow-lg p-3 xs:p-4 sm:p-6 md:p-8 border border-gray-100">
+    <div className="w-full mx-auto py-4 sm:py-6">
+      <div className="bg-white rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-lg p-4 sm:p-6 md:p-8 border border-gray-100">
         {/* Header */}
-        <div className="text-center mb-4 xs:mb-5 sm:mb-6 md:mb-8 lg:mb-10">
-          <h2 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 mb-2 xs:mb-3 sm:mb-4">
+        <div className="text-center mb-6 sm:mb-8 md:mb-10">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
             Job Offers
           </h2>
 
-          <div className="inline-flex bg-gray-100 rounded-lg xs:rounded-xl sm:rounded-2xl p-0.5 xs:p-1 sm:p-1.5 mb-2 xs:mb-3 sm:mb-4">
-            <button 
+          <div className="inline-flex bg-gray-100 rounded-lg sm:rounded-xl p-1 sm:p-1.5 mb-3 sm:mb-4">
+            <button
               onClick={() => setActiveTab("week")}
-              className={`px-2.5 xs:px-3 sm:px-4 md:px-6 lg:px-7 py-1 xs:py-1.5 sm:py-2 md:py-2.5 rounded-md xs:rounded-lg sm:rounded-xl text-[10px] xs:text-xs sm:text-sm md:text-base font-semibold shadow-sm whitespace-nowrap transition-all ${
-                activeTab === "week" 
-                  ? "bg-white text-slate-800" 
-                  : "text-gray-500 hover:bg-white/70"
+              className={`px-4 sm:px-6 md:px-8 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm md:text-base font-semibold transition-all ${
+                activeTab === "week"
+                  ? "bg-white text-gray-800 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
               }`}
             >
-              This week
+              This Week
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab("month")}
-              className={`px-2.5 xs:px-3 sm:px-4 md:px-6 lg:px-7 py-1 xs:py-1.5 sm:py-2 md:py-2.5 rounded-md xs:rounded-lg sm:rounded-xl text-[10px] xs:text-xs sm:text-sm md:text-base font-semibold shadow-sm whitespace-nowrap transition-all ${
-                activeTab === "month" 
-                  ? "bg-white text-slate-800" 
-                  : "text-gray-500 hover:bg-white/70"
+              className={`px-4 sm:px-6 md:px-8 py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm md:text-base font-semibold transition-all ${
+                activeTab === "month"
+                  ? "bg-white text-gray-800 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
               }`}
             >
-              This year
+              This Year
             </button>
           </div>
 
-          <div className="text-gray-400 text-[10px] xs:text-xs sm:text-sm">
+          <div className="text-gray-500 text-xs sm:text-sm">
             {getDisplayDate()}
+            {activeTab === "week" && " (Current Week)"}
+            {activeTab === "month" && " (Yearly Overview)"}
           </div>
         </div>
 
-        {/* Chart */}
-        <div className={`h-[${getChartHeight()}px] w-full`}>
+        {/* Chart Container */}
+        <div style={{ height: `${getChartHeight()}px` }} className="w-full">
           {loading ? (
-            <div className="h-full flex items-center justify-center text-gray-500 gap-1.5 xs:gap-2 sm:gap-3">
-              <div className="animate-spin h-4 w-4 xs:h-5 xs:w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 border-3 xs:border-4 border-indigo-500 border-t-transparent rounded-full" />
-              <span className="text-[10px] xs:text-xs sm:text-sm md:text-base">Yuklanmoqda...</span>
+            <div className="h-full flex flex-col items-center justify-center text-gray-500">
+              <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-indigo-500 border-t-transparent rounded-full mb-3 sm:mb-4" />
+              <span className="text-xs sm:text-sm md:text-base">
+                Loading applications data...
+              </span>
             </div>
           ) : error ? (
-            <div className="h-full flex items-center justify-center text-red-600 text-xs xs:text-sm sm:text-base md:text-lg">
-              {error}
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-red-500 text-lg sm:text-xl mb-2">⚠️</div>
+                <div className="text-red-600 text-xs sm:text-sm md:text-base">
+                  {error}
+                </div>
+                <div className="text-gray-500 text-xs mt-2">
+                  Using demo data for preview
+                </div>
+              </div>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={activeData}
-                margin={{ 
-                  top: windowWidth < 400 ? 10 : 20,
-                  right: getXPadding(),
-                  left: -getYAxisWidth(),
-                  bottom: windowWidth < 400 ? 5 : (windowWidth < 640 ? 10 : 15)
-                }}
-              >
+              <AreaChart data={activeData} margin={chartSettings.margin}>
                 <defs>
                   <linearGradient id="colorOffers" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#5ABF89" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#5ABF89" stopOpacity={0.02} />
+                    <stop offset="5%" stopColor="#5ABF89" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#5ABF89" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
 
-                <CartesianGrid 
-                  vertical={false} 
-                  stroke="#f0f0f0" 
-                  strokeDasharray={windowWidth < 400 ? "2 2" : "3 3"}
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#f0f0f0"
+                  vertical={false}
+                  horizontal={true}
                 />
 
                 <XAxis
                   dataKey="day"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ 
-                    fill: "#9CA3AF", 
-                    fontSize: windowWidth < 400 ? 10 : (windowWidth < 500 ? 11 : 13),
-                    fontWeight: 500 
+                  tick={{
+                    fill: "#6b7280",
+                    fontSize: chartSettings.fontSize.xAxis,
+                    fontWeight: 500,
                   }}
-                  dy={windowWidth < 400 ? 5 : 10}
-                  minTickGap={activeTab === "month" ? 0 : 1}
-                  interval={windowWidth < 400 && activeTab === "month" ? "preserveStartEnd" : 0}
+                  dy={10}
+                  interval="preserveStartEnd"
+                  minTickGap={
+                    windowWidth < 400 ? (activeTab === "month" ? 2 : 1) : 1
+                  }
                 />
 
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ 
-                    fill: "#9CA3AF", 
-                    fontSize: windowWidth < 400 ? 10 : (windowWidth < 500 ? 11 : 13)
+                  tick={{
+                    fill: "#6b7280",
+                    fontSize: chartSettings.fontSize.yAxis,
                   }}
-                  width={getYAxisWidth()}
+                  width={windowWidth < 400 ? 30 : windowWidth < 768 ? 35 : 40}
+                  domain={[0, getMaxValue()]}
+                  tickFormatter={(value) => value.toFixed(0)}
                 />
 
                 <Tooltip
                   content={<CustomTooltip />}
-                  cursor={{ 
-                    stroke: "#5ABF89", 
-                    strokeWidth: windowWidth < 400 ? 1 : 1.5, 
-                    strokeDasharray: "3 3" 
+                  cursor={{
+                    stroke: "#5ABF89",
+                    strokeWidth: 1,
+                    strokeDasharray: "3 3",
                   }}
                 />
 
@@ -350,20 +419,20 @@ const Dashboard3 = () => {
                   type="monotone"
                   dataKey="views"
                   stroke="#5ABF89"
-                  strokeWidth={windowWidth < 400 ? 1.5 : (windowWidth < 500 ? 2 : 3.5)}
+                  strokeWidth={chartSettings.strokeWidth}
                   fill="url(#colorOffers)"
                   activeDot={{
-                    r: windowWidth < 400 ? 4 : (windowWidth < 500 ? 5 : 8),
-                    stroke: "#fff",
-                    strokeWidth: windowWidth < 400 ? 1 : (windowWidth < 500 ? 2 : 3),
+                    r: chartSettings.activeDotRadius,
+                    stroke: "#ffffff",
+                    strokeWidth: 2,
                     fill: "#5ABF89",
                   }}
-                  dot={windowWidth > 768 ? {
-                    r: windowWidth < 1024 ? 3 : 4,
+                  dot={{
+                    r: chartSettings.dotRadius,
                     stroke: "#5ABF89",
-                    strokeWidth: 1,
-                    fill: "#fff"
-                  } : false}
+                    strokeWidth: 1.5,
+                    fill: "#ffffff",
+                  }}
                 />
               </AreaChart>
             </ResponsiveContainer>
