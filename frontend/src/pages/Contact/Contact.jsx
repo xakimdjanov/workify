@@ -33,7 +33,7 @@ const Contact = () => {
     e.preventDefault();
     
     // Validation
-    if (!formData.name.trim() || !formData.email.trim() || !formData.problem.trim()) {
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
       setMessage({ 
         text: "Iltimos, barcha maydonlarni to'ldiring", 
         type: "error" 
@@ -56,7 +56,7 @@ const Contact = () => {
       await contactApi.sendMessage({
         name: formData.name,
         email: formData.email,
-        message: formData.problem,
+        message: formData.message,
         createdAt: new Date().toISOString()
       });
 
@@ -106,7 +106,7 @@ const Contact = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
           <div className="bg-white rounded-[32px] p-6 md:p-10 shadow-sm border border-gray-50 flex flex-col items-center w-full">
             <h2 className="text-xl md:text-2xl font-bold text-center mb-8 leading-tight text-[#333]">
-              Is there a problem? <br /> Let us know.
+              Is there a message? <br /> Let us know.
             </h2>
 
             {/* Message display */}
@@ -143,8 +143,8 @@ const Contact = () => {
                 disabled={loading}
               />
               <textarea
-                name="problem"
-                placeholder="What is the problem?"
+                name="message"
+                placeholder="What is the message?"
                 rows="4"
                 value={formData.message}
                 onChange={handleChange}
