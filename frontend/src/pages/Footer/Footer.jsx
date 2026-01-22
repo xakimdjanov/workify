@@ -3,21 +3,21 @@ import {
   BsInstagram,
   BsFacebook,
   BsYoutube,
-  BsTelegram, // Rasmdagi oxirgi icon Twitter emas, Telegramga o'xshash ekan
+  BsTelegram,
 } from "react-icons/bs";
 
-// Ustunlar uchun yordamchi komponent (Kod takrorlanmasligi uchun)
+// Ustunlar uchun yordamchi komponent
 const FooterColumn = ({ title, links }) => (
   <div className="flex flex-col gap-4">
     <h5 className="text-white font-bold text-[15px] mb-2">{title}</h5>
     <ul className="flex flex-col gap-3">
       {links.map((link) => (
-        <li key={link}>
+        <li key={link.label}>
           <a
-            href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
+            href={link.href}
             className="text-slate-400 hover:text-white transition-colors duration-300 text-[14px] font-medium"
           >
-            {link}
+            {link.label}
           </a>
         </li>
       ))}
@@ -45,7 +45,13 @@ const Footer = () => {
           <div className="lg:ml-auto">
             <FooterColumn
               title="General"
-              links={["Sign up", "Contacts", "About", "FAQ", "Partners"]}
+              links={[
+                { label: "Sign up", href: "/registration/step-1" },
+                { label: "Contacts", href: "/contacts" },
+                { label: "About", href: "/about" },
+                { label: "FAQ", href: "/faq" },
+                { label: "Partners", href: "/partners" },
+              ]}
             />
           </div>
 
@@ -53,10 +59,10 @@ const Footer = () => {
             <FooterColumn
               title="Company"
               links={[
-                "Post a job",
-                "Search talents",
-                "Company login",
-                "Company advice",
+                { label: "Post a job", href: "/post-job" },
+                { label: "Search talents", href: "/talents" },
+                { label: "Company login", href: "/company-login" },
+                { label: "Company advice", href: "/company-advice" },
               ]}
             />
           </div>
@@ -64,7 +70,11 @@ const Footer = () => {
           <div className="lg:ml-auto">
             <FooterColumn
               title="Talents"
-              links={["Search jobs", "Talent login", "Talent advice"]}
+              links={[
+                { label: "Search jobs", href: "/jobs" },
+                { label: "Talent login", href: "/talent-login" },
+                { label: "Talent advice", href: "/talent-advice" },
+              ]}
             />
           </div>
 
@@ -78,26 +88,34 @@ const Footer = () => {
 
           <div className="flex gap-5 items-center order-1 md:order-2">
             <a
-              href="#"
-              className="text-white hover:text-slate-350 transition-transform hover:-translate-y-1"
+              href="https://instagram.com"
+              target="_blank"
+              rel="noreferrer"
+              className="text-white hover:text-slate-300 transition-transform hover:-translate-y-1"
             >
               <BsInstagram size={20} />
             </a>
             <a
-              href="#"
-              className="text-white hover:text-slate-350 transition-transform hover:-translate-y-1"
+              href="https://facebook.com"
+              target="_blank"
+              rel="noreferrer"
+              className="text-white hover:text-slate-300 transition-transform hover:-translate-y-1"
             >
               <BsFacebook size={20} />
             </a>
             <a
-              href="#"
-              className="text-white hover:text-slate-350 transition-transform hover:-translate-y-1"
+              href="https://youtube.com"
+              target="_blank"
+              rel="noreferrer"
+              className="text-white hover:text-slate-300 transition-transform hover:-translate-y-1"
             >
               <BsYoutube size={22} />
             </a>
             <a
-              href="#"
-              className="text-white hover:text-slate-350 transition-transform hover:-translate-y-1"
+              href="https://t.me"
+              target="_blank"
+              rel="noreferrer"
+              className="text-white hover:text-slate-300 transition-transform hover:-translate-y-1"
             >
               <BsTelegram size={20} />
             </a>
