@@ -175,7 +175,7 @@ const ProfilePage = () => {
 
               <div className="mt-8 pt-6 border-t border-gray-100 space-y-3 text-left">
                 <h3 className="font-bold text-gray-800 text-sm mb-4">Personal info:</h3>
-                <InfoRow label="Age" value={user?.age} />
+                <InfoRow label="Age" value={user?.date_of_birth} />
                 <InfoRow label="City" value={user?.city} />
                 <InfoRow label="Country" value={user?.country} />
                 <InfoRow label="Phone" value={user?.phone} />
