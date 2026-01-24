@@ -16,23 +16,19 @@ import CompanyDetail from "./components/CompanyDetail/CompanyDetail";
 import Faq from "./pages/Faq/Faq";
 import Contact from "./pages/Contact/Contact";
 
-// --- HIMOYALANGAN YO'LLAR UCHUN KOMPONENT ---
 const ProtectedRoute = () => {
   const token = localStorage.getItem("token");
 
-  // Agar token bo'lmasa, login sahifasiga yo'naltirish
   if (!token) {
     return <Navigate to="/signin" replace />;
   }
 
-  // Agar token bo'lsa, sahifani ko'rsatish
   return <Outlet />;
 };
 
 function App() {
   return (
     <Routes>
-      {/* Ochiq sahifalar (Hamma ko'ra oladi) */}
       <Route path="/" element={<TalantHome />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/registration/step-1" element={<RegistrationForm />} />
@@ -45,7 +41,6 @@ function App() {
         element={<RegistrationFormStepThree />}
       />
 
-      {/* Himoyalangan sahifalar (Faqat login qilganlar uchun) */}
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
@@ -61,7 +56,6 @@ function App() {
         </Route>
       </Route>
 
-      {/* Noto'g'ri link yozilsa, asosiysiga qaytarib yuborish */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
