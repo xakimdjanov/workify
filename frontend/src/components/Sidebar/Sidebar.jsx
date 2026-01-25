@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { talentApi, applicationApi } from "../../services/api";
+import { useTheme } from "../../Context/ThemeContext"; // ThemeContext ulandi
 import { jwtDecode } from "jwt-decode";
 import {
   HiChartBar,
@@ -14,6 +15,9 @@ import {
 } from "react-icons/hi";
 
 const Sidebar = () => {
+  const { settings } = useTheme(); // Dark mode holatini olamiz
+  const isDark = settings.darkMode;
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [appCount, setAppCount] = useState(0);
@@ -27,14 +31,7 @@ const Sidebar = () => {
         if (!token) return;
 
         const decoded = jwtDecode(token);
-        const currentUserId =
-          decoded.id ||
-          decoded.userId ||
-          decoded.user_id ||
-          decoded.talentId ||
-          decoded.talent_id ||
-          decoded.applicantId ||
-          decoded.applicant_id;
+        const currentUserId = decoded.id || decoded.userId || decoded.user_id;
 
         const [userRes, appRes] = await Promise.all([
           talentApi.getById(decoded.id),
@@ -48,19 +45,11 @@ const Sidebar = () => {
           : appRes.data?.data || [];
 
         if (currentUserId) {
-          const myApps = allApps.filter((app) => {
-            return (
-              app.talentId === currentUserId ||
-              app.talent_id === currentUserId ||
-              app.applicantId === currentUserId ||
-              app.applicant_id === currentUserId ||
-              app.userId === currentUserId ||
-              app.user_id === currentUserId
-            );
-          });
+          const myApps = allApps.filter(
+            (app) =>
+              app.talentId === currentUserId || app.userId === currentUserId,
+          );
           setAppCount(myApps.length);
-        } else {
-          setAppCount(0);
         }
       } catch (err) {
         console.error("Sidebar error:", err);
@@ -79,14 +68,25 @@ const Sidebar = () => {
 
   return (
     <>
-      <aside className="fixed bottom-0 left-0 w-full h-[75px] md:top-0 md:h-screen md:w-[290px] bg-white border-t md:border-r border-gray-100 z-50 md:rounded-r-[35px] flex md:flex-col py-2 md:py-8 transition-all duration-300">
+      <aside
+        className={`fixed bottom-0 left-0 w-full h-[75px] md:top-0 md:h-screen md:w-[290px] z-50 md:rounded-r-[35px] flex md:flex-col py-2 md:py-8 transition-all duration-500 border-t md:border-r ${
+          isDark ? "bg-[#1E1E1E] border-gray-800" : "bg-white border-gray-100"
+        }`}
+      >
+        {/* User Profile Section */}
         <div className="hidden md:flex items-center gap-3 px-8 mb-8">
           {loading ? (
             <div className="flex items-center gap-3 animate-pulse">
-              <div className="w-11 h-11 rounded-full bg-gray-200"></div>
+              <div
+                className={`w-11 h-11 rounded-full ${isDark ? "bg-gray-700" : "bg-gray-200"}`}
+              ></div>
               <div className="space-y-2">
-                <div className="h-3 w-24 bg-gray-200 rounded"></div>
-                <div className="h-2 w-16 bg-gray-100 rounded"></div>
+                <div
+                  className={`h-3 w-24 rounded ${isDark ? "bg-gray-700" : "bg-gray-200"}`}
+                ></div>
+                <div
+                  className={`h-2 w-16 rounded ${isDark ? "bg-gray-800" : "bg-gray-100"}`}
+                ></div>
               </div>
             </div>
           ) : (
@@ -94,13 +94,17 @@ const Sidebar = () => {
               <img
                 src={user?.image || "https://via.placeholder.com/150"}
                 alt="avatar"
-                className="w-11 h-11 rounded-full object-cover border border-gray-100 shadow-sm"
+                className={`w-11 h-11 rounded-full object-cover border shadow-sm ${isDark ? "border-gray-700" : "border-gray-100"}`}
               />
               <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-                <h3 className="font-bold text-[#334155] text-[14px] truncate">
+                <h3
+                  className={`font-bold text-[14px] truncate ${isDark ? "text-gray-200" : "text-[#334155]"}`}
+                >
                   {user?.first_name} {user?.last_name?.charAt(0)}.
                 </h3>
-                <p className="text-[12px] text-[#cbd5e1] font-medium truncate">
+                <p
+                  className={`text-[12px] font-medium truncate ${isDark ? "text-gray-500" : "text-[#cbd5e1]"}`}
+                >
                   {user?.city || user?.location || "O'zbekiston"}
                 </p>
               </div>
@@ -108,42 +112,61 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* --- MOBILE UCHUN TUZATILGAN QISM --- */}
+        {/* Navigation Menu */}
         <nav className="flex w-full justify-between px-2 md:justify-start md:flex-col md:px-5 gap-0 md:gap-1">
-          <MenuItem to="/dashboard" icon={<HiChartBar />} label="Dashboard" />
+          <MenuItem
+            to="/dashboard"
+            icon={<HiChartBar />}
+            label="Dashboard"
+            isDark={isDark}
+          />
           <MenuItem
             to="/profile"
             icon={<HiOutlineUserCircle />}
             label="My profile"
+            isDark={isDark}
           />
           <MenuItem
             to="/alerts"
             icon={<HiOutlineBell />}
             label="Job alerts"
             badge={appCount > 0 ? appCount : null}
+            isDark={isDark}
           />
           <MenuItem
             to="/matches"
             icon={<HiOutlineRefresh />}
             label="Job matches"
+            isDark={isDark}
+          />
+          <MenuItem
+            to="/settings"
+            icon={<HiOutlineCog />}
+            label="Settings"
+            isDark={isDark}
           />
 
-          {/* Settings endi mobil ekranda siqilib qolmaydi */}
-          <MenuItem to="/settings" icon={<HiOutlineCog />} label="Settings" />
-
           <div className="hidden md:block">
-            <MenuItem to="/faq" icon={<HiOutlineChatAlt2 />} label="FAQ" />
+            <MenuItem
+              to="/faq"
+              icon={<HiOutlineChatAlt2 />}
+              label="FAQ"
+              isDark={isDark}
+            />
             <MenuItem
               to="/contacts"
               icon={<HiOutlineUsers />}
               label="Contacts"
+              isDark={isDark}
             />
           </div>
 
           <div className="hidden md:block md:mt-auto md:pt-4">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex flex-col md:flex-row items-center gap-1 md:gap-4 px-3 md:px-6 py-2 md:py-[14px] rounded-xl md:rounded-[14px] transition-all duration-200 text-[10px] md:text-[16px] font-bold text-red-500 hover:bg-red-50 w-full"
+              className={`flex flex-col md:flex-row items-center gap-1 md:gap-4 px-3 md:px-6 py-2 md:py-[14px] rounded-xl md:rounded-[14px] transition-all duration-200 text-[10px] md:text-[16px] font-bold text-red-500 w-full ${
+                isDark ? "hover:bg-red-900/20" : "hover:bg-red-50"
+              }`}
             >
               <span className="text-[22px] md:text-[24px]">
                 <HiOutlineLogout />
@@ -154,18 +177,31 @@ const Sidebar = () => {
         </nav>
       </aside>
 
+      {/* Logout Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl animate-in fade-in zoom-in duration-200">
-            <h3 className="text-xl font-bold text-[#334155] mb-2">Chiqish</h3>
-            <p className="text-gray-500 mb-6">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div
+            className={`rounded-2xl p-6 w-full max-w-sm shadow-2xl animate-in fade-in zoom-in duration-200 ${
+              isDark ? "bg-[#1E1E1E] text-white" : "bg-white"
+            }`}
+          >
+            <h3
+              className={`text-xl font-bold mb-2 ${isDark ? "text-gray-100" : "text-[#334155]"}`}
+            >
+              Chiqish
+            </h3>
+            <p className={`mb-6 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
               Rostdan ham tizimdan chiqmoqchimisiz? Barcha ma'lumotlar
               tozalanadi.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+                className={`flex-1 py-3 px-4 rounded-xl font-bold transition-colors ${
+                  isDark
+                    ? "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               >
                 Yo'q
               </button>
@@ -183,8 +219,7 @@ const Sidebar = () => {
   );
 };
 
-// MenuItem'da paddingni biroz kamaytirdik (px-2) mobil uchun
-const MenuItem = ({ to, icon, label, badge }) => (
+const MenuItem = ({ to, icon, label, badge, isDark }) => (
   <NavLink
     to={to}
     className={({ isActive }) => `
@@ -193,7 +228,13 @@ const MenuItem = ({ to, icon, label, badge }) => (
       rounded-xl md:rounded-[14px] transition-all duration-200
       text-[9px] md:text-[16px] font-bold
       relative group flex-1 md:w-full
-      ${isActive ? "bg-[#163853] text-white shadow-md" : "text-[#cbd5e1] hover:bg-gray-50 hover:text-[#94a3b8]"}
+      ${
+        isActive
+          ? "bg-[#163853] text-white shadow-md"
+          : isDark
+            ? "text-gray-500 hover:bg-gray-800 hover:text-gray-300"
+            : "text-[#cbd5e1] hover:bg-gray-50 hover:text-[#94a3b8]"
+      }
     `}
   >
     <span className="text-[22px] md:text-[24px]">{icon}</span>

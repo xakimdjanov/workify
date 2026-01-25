@@ -1,10 +1,17 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar/Sidebar";
+import { useTheme } from "../../src/Context/ThemeContext";
 
 const MainLayout = () => {
+  const { settings } = useTheme();
+
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">
+    <div
+      className={`min-h-screen flex flex-col md:flex-row transition-colors duration-500 ${
+        settings.darkMode ? "bg-[#121212]" : "bg-gray-100"
+      }`}
+    >
       {/* Sidebar */}
       <Sidebar />
 
