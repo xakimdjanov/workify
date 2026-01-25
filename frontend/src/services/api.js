@@ -18,41 +18,38 @@ api.interceptors.request.use((config) => {
 });
 
 // --- TALENT API ---
-// services/api.js
 export const talentApi = {
   registerTalent: (formData) => {
     const token = localStorage.getItem("token");
     return api.post("/talent/register", formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
   },
 
   sendVerifyCode: (email) => api.post("/talent/send-verify-code", { email }),
-  
   checkVerifyCode: (email, code) => api.post("/talent/check-verify-code", { email, code }),
-  
   confirmVerifyEmail: (data) => api.post("/talent/confirm-verify-email", data),
 
+  sendResetCode: (email) => api.post("/talent/send-reset-code", { email }),
+  checkResetCode: (email, code) => {
+  return api.post("/talent/check-reset-code", { 
+    email: email.trim(), 
+    code: String(code) 
+  });
+},
+  confirmResetPassword: (email, code, newPassword) =>
+    api.post("/talent/confirm-reset-password", { email, code, newPassword }),
+
   login: (data) => api.post("/talent/login", data),
-
   getAll: () => api.get("/talent"),
-
   getById: (id) => api.get(`/talent/${id}`),
-
   search: (query) => api.get(`/talent/search?query=${query}`),
-
   update: (id, formData) => {
     const token = localStorage.getItem("token");
     return api.put(`/talent/${id}`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        // ❌ Content-Type YO‘Q
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
   },
-
   delete: (id) => api.delete(`/talent/${id}`),
 };
 

@@ -16,6 +16,7 @@ import CompanyDetail from "./components/CompanyDetail/CompanyDetail";
 import Faq from "./pages/Faq/Faq";
 import Contact from "./pages/Contact/Contact";
 import VerifyAccount from "./pages/VerifyAccount/VerifyAccount";
+import ForgotPassword from "./pages/ResetPassword/ResetPassword";
 
 const ProtectedRoute = () => {
   const token = localStorage.getItem("token");
@@ -45,6 +46,8 @@ function App() {
           path="/verify-account" 
           element={<VerifyAccount />} 
         />
+
+        <Route path="/forgot-password" element={<ForgotPassword/>}/>
 
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
