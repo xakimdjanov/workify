@@ -15,6 +15,7 @@ import JobAlerts from "./components/JobAlerts/JobAlerts";
 import CompanyDetail from "./components/CompanyDetail/CompanyDetail";
 import Faq from "./pages/Faq/Faq";
 import Contact from "./pages/Contact/Contact";
+import VerifyAccount from "./pages/VerifyAccount/VerifyAccount";
 
 const ProtectedRoute = () => {
   const token = localStorage.getItem("token");
@@ -40,6 +41,10 @@ function App() {
         path="/registration/step-3"
         element={<RegistrationFormStepThree />}
       />
+      <Route 
+          path="/verify-account" 
+          element={<VerifyAccount />} 
+        />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>

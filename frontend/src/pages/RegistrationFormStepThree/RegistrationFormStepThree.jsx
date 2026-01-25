@@ -26,7 +26,6 @@ export default function RegistrationFormStepThree() {
   const [city, setCity] = useState("");
   const [loading, setLoading] = useState(false);
   
-  // Xatolik holatlari uchun state
   const [errors, setErrors] = useState({
     workplaceType: false,
     minimumSalary: false,
@@ -45,7 +44,6 @@ export default function RegistrationFormStepThree() {
     }
   }, []);
 
-  // Input o'zgarganda xatoliklarni tozalash
   useEffect(() => {
     if (errors.workplaceType && workplaceType) {
       setErrors(prev => ({ ...prev, workplaceType: false }));
@@ -59,7 +57,6 @@ export default function RegistrationFormStepThree() {
   }, [workplaceType, minimumSalary, city, errors]);
 
   const handleFinish = async () => {
-    // Validatsiya
     const newErrors = {
       workplaceType: !workplaceType,
       minimumSalary: !minimumSalary || Number(minimumSalary) <= 0,
@@ -68,18 +65,8 @@ export default function RegistrationFormStepThree() {
 
     setErrors(newErrors);
 
-    if (newErrors.workplaceType) {
-      toast.error("Workplace type tanlang");
-      return;
-    }
-    
-    if (newErrors.minimumSalary) {
-      toast.error("Minimum salary kiriting");
-      return;
-    }
-    
-    if (newErrors.city) {
-      toast.error("City kiriting");
+    if (newErrors.workplaceType || newErrors.minimumSalary || newErrors.city) {
+      toast.error("Iltimos, barcha maydonlarni to'ldiring");
       return;
     }
 
@@ -99,8 +86,6 @@ export default function RegistrationFormStepThree() {
 
       const allData = { ...step1, ...step2, ...step3 };
 
-      console.log(allData);
-
       if (!allData.email) {
         toast.error("Email topilmadi. Iltimos 1-qadamni qayta to'ldiring.");
         setLoading(false);
@@ -108,46 +93,38 @@ export default function RegistrationFormStepThree() {
       }
 
       const formData = new FormData();
-
       Object.entries(allData).forEach(([key, value]) => {
         if (value === null || value === undefined) return;
-
-        if (
-          (key === "image" || key === "profileimg") &&
-          value instanceof File
-        ) {
+        if ((key === "image" || key === "profileimg") && value instanceof File) {
           formData.append("image", value);
           return;
         }
-
         if (Array.isArray(value)) {
           formData.append(key, JSON.stringify(value));
           return;
         }
-
         formData.append(key, value);
       });
 
       const response = await talentApi.registerTalent(formData);
 
       if (response.status === 200 || response.status === 201) {
+        // Ma'lumotlarni tozalash, lekin emailni tasdiqlash uchun saqlab qolamiz
+        localStorage.setItem("verify_email", allData.email);
+        
         localStorage.removeItem("step1_data");
         localStorage.removeItem("talent_step2");
         localStorage.removeItem("talent_step3");
 
-        toast.success("Muvaffaqiyatli ro'yxatdan o'tdingiz! Endi login qiling.");
+        toast.success("Ma'lumotlar saqlandi! Endi hisobingizni tasdiqlang.");
         
         setTimeout(() => {
-          navigate("/signin");
-        }, 2000);
+          navigate("/verify-account"); // Tasdiqlash sahifasiga o'tish
+        }, 1500);
       }
     } catch (error) {
       console.error("Backend xatosi:", error.response?.data);
-      toast.error(
-        `Xatolik: ${
-          error.response?.data?.message || "Serverda muammo yuz berdi"
-        }`
-      );
+      toast.error(`Xatolik: ${error.response?.data?.message || "Serverda muammo yuz berdi"}`);
     } finally {
       setLoading(false);
     }
@@ -155,39 +132,12 @@ export default function RegistrationFormStepThree() {
 
   return (
     <div>
-      {/* Toast Container */}
-      <Toaster
-        toastOptions={{
-          duration: 4000,
-          position: "top-right",
-          style: {
-            fontSize: '14px',
-            fontWeight: '500',
-            borderRadius: '8px',
-            padding: '12px 16px',
-          },
-          success: {
-            style: {
-              background: '#f0fdf4',
-              color: '#166534',
-              border: '1px solid #86efac',
-            },
-          },
-          error: {
-            style: {
-              background: '#fef2f2',
-              color: '#991b1b',
-              border: '1px solid #fca5a5',
-            },
-          },
-        }}
-      />
-
+      <Toaster toastOptions={{ duration: 4000, position: "top-right" }} />
       <Header />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 md:p-8">
-        <div className="bg-white rounded-2xl shadow-lg w-full max-w-[388px] md:max-w-[988px] p-6 md:p-12">
-          <div className="mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6">
+        <div className="bg-white rounded-2xl shadow-lg w-full max-w-[988px] p-6 md:p-12">
+          <div className="mb-8 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
               How do you imagine your dream job?
             </h2>
             <div className="flex items-center justify-center gap-2 md:gap-4">
@@ -201,46 +151,26 @@ export default function RegistrationFormStepThree() {
 
           <div className="space-y-6">
             <div>
-              <label className="block text-gray-700 font-medium mb-3">
-                Employment type
-              </label>
-
+              <label className="block text-gray-700 font-medium mb-3">Employment type</label>
               <div className="relative bg-gray-100 rounded-[50px] border border-gray-200 grid grid-cols-4 p-1 overflow-hidden">
                 <div
                   className="absolute top-1 bottom-1 left-1 w-[calc(25%-0.5rem)] bg-white rounded-[50px] shadow-md transition-all duration-300"
-                  style={{
-                    transform: `translateX(${
-                      ["fulltime", "parttime", "contract", "freelance"].indexOf(
-                        employmentType
-                      ) * 100
-                    }%)`,
-                  }}
+                  style={{ transform: `translateX(${["fulltime", "parttime", "contract", "freelance"].indexOf(employmentType) * 100}%)` }}
                 ></div>
-
                 {[
                   { id: "fulltime", label: "Full time", icon: <FaBriefcase /> },
                   { id: "parttime", label: "Part time", icon: <FaClock /> },
-                  {
-                    id: "contract",
-                    label: "Contract",
-                    icon: <FaFileContract />,
-                  },
+                  { id: "contract", label: "Contract", icon: <FaFileContract /> },
                   { id: "freelance", label: "Freelance", icon: <FaUserTie /> },
                 ].map((type) => (
                   <button
                     key={type.id}
                     type="button"
                     onClick={() => setEmploymentType(type.id)}
-                    className={`flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 py-2 md:py-4 relative z-10 font-medium transition-all duration-200 ${
-                      employmentType === type.id
-                        ? "text-[#163D5C]"
-                        : "text-gray-400"
-                    }`}
+                    className={`flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 py-2 md:py-4 relative z-10 font-medium transition-all duration-200 ${employmentType === type.id ? "text-[#163D5C]" : "text-gray-400"}`}
                   >
                     <span className="text-sm md:text-lg">{type.icon}</span>
-                    <span className="text-[10px] sm:text-xs md:text-base whitespace-nowrap">
-                      {type.label}
-                    </span>
+                    <span className="text-[10px] sm:text-xs md:text-base whitespace-nowrap">{type.label}</span>
                   </button>
                 ))}
               </div>
@@ -248,33 +178,18 @@ export default function RegistrationFormStepThree() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  Workplace type *
-                </label>
-                <div className={`relative bg-gray-100 rounded-[50px] border flex overflow-hidden ${
-                  errors.workplaceType ? "border-red-500" : "border-gray-200"
-                }`}>
+                <label className="block text-gray-700 font-medium mb-2">Workplace type *</label>
+                <div className={`relative bg-gray-100 rounded-[50px] border flex overflow-hidden ${errors.workplaceType ? "border-red-500" : "border-gray-200"}`}>
                   <div
-                    className={`absolute top-0 left-0 h-full w-1/3 bg-white rounded-[50px] shadow-md transition-all duration-300 ${
-                      errors.workplaceType ? "bg-red-50" : ""
-                    }`}
-                    style={{
-                      transform: `translateX(${
-                        ["Onsite", "Remote", "Hybrid"].indexOf(workplaceType) *
-                        100
-                      }%)`,
-                    }}
+                    className="absolute top-0 left-0 h-full w-1/3 bg-white rounded-[50px] shadow-md transition-all duration-300"
+                    style={{ transform: `translateX(${["Onsite", "Remote", "Hybrid"].indexOf(workplaceType) * 100}%)` }}
                   ></div>
-
                   {["Onsite", "Remote", "Hybrid"].map((type) => (
                     <button
                       key={type}
+                      type="button"
                       onClick={() => setWorkplaceType(type)}
-                      className={`flex-1 flex items-center justify-center gap-2 py-3 relative z-10 font-semibold transition-colors duration-200
-                        ${workplaceType === type ? 
-                          errors.workplaceType ? "text-red-600" : "text-[#163D5C]" 
-                          : "text-gray-400"}
-                      `}
+                      className={`flex-1 flex items-center justify-center gap-2 py-3 relative z-10 font-semibold transition-colors duration-200 ${workplaceType === type ? "text-[#163D5C]" : "text-gray-400"}`}
                     >
                       {type === "Onsite" && <FaBuilding />}
                       {type === "Remote" && <FaHome />}
@@ -283,66 +198,36 @@ export default function RegistrationFormStepThree() {
                     </button>
                   ))}
                 </div>
-                {errors.workplaceType && (
-                  <p className="mt-1 text-sm text-red-600">Workplace type tanlang</p>
-                )}
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  Minimum salary *
-                </label>
+                <label className="block text-gray-700 font-medium mb-2">Minimum salary *</label>
                 <div className="relative">
-                  <FaDollarSign className={`absolute left-4 top-1/2 -translate-y-1/2 ${
-                    errors.minimumSalary ? "text-red-500" : "text-[#163D5C]"
-                  }`} />
+                  <FaDollarSign className={`absolute left-4 top-1/2 -translate-y-1/2 ${errors.minimumSalary ? "text-red-500" : "text-[#163D5C]"}`} />
                   <input
                     type="number"
                     value={minimumSalary}
                     onChange={(e) => setMinimumSalary(e.target.value)}
-                    className={`w-full pl-12 pr-10 py-3 border rounded-lg focus:ring-2 outline-none ${
-                      errors.minimumSalary 
-                        ? "border-red-500 focus:ring-red-300 bg-red-50" 
-                        : "border-gray-200 focus:ring-[#163D5C]"
-                    }`}
+                    className={`w-full pl-12 pr-10 py-3 border rounded-lg outline-none ${errors.minimumSalary ? "border-red-500 bg-red-50" : "border-gray-200 focus:ring-2 focus:ring-[#163D5C]"}`}
                     placeholder="Enter amount"
                   />
-                  <span className={`absolute right-4 top-1/2 -translate-y-1/2 ${
-                    errors.minimumSalary ? "text-red-500" : "text-gray-400"
-                  }`}>
-                    $
-                  </span>
                 </div>
-                {errors.minimumSalary && (
-                  <p className="mt-1 text-sm text-red-600">Minimum salary kiriting</p>
-                )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  City *
-                </label>
+                <label className="block text-gray-700 font-medium mb-2">City *</label>
                 <div className="relative">
-                  <FaCity className={`absolute left-4 top-1/2 -translate-y-1/2 ${
-                    errors.city ? "text-red-500" : "text-[#163D5C]"
-                  }`} />
+                  <FaCity className={`absolute left-4 top-1/2 -translate-y-1/2 ${errors.city ? "text-red-500" : "text-[#163D5C]"}`} />
                   <input
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className={`w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 outline-none ${
-                      errors.city 
-                        ? "border-red-500 focus:ring-red-300 bg-red-50" 
-                        : "border-gray-200 focus:ring-[#163D5C]"
-                    }`}
+                    className={`w-full pl-12 pr-4 py-3 border rounded-lg outline-none ${errors.city ? "border-red-500 bg-red-50" : "border-gray-200 focus:ring-2 focus:ring-[#163D5C]"}`}
                     placeholder="Enter city"
                   />
                 </div>
-                {errors.city && (
-                  <p className="mt-1 text-sm text-red-600">City kiriting</p>
-                )}
               </div>
             </div>
 
@@ -351,7 +236,7 @@ export default function RegistrationFormStepThree() {
                 type="button"
                 onClick={() => navigate("/registration/step-2")}
                 disabled={loading}
-                className="w-full md:w-auto px-12 py-3 border-2 border-[#163D5C] text-[#163D5C] rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+                className="w-full md:w-auto px-12 py-3 border-2 border-[#163D5C] text-[#163D5C] rounded-lg font-medium hover:bg-gray-50 disabled:opacity-50"
               >
                 Back
               </button>
@@ -359,34 +244,9 @@ export default function RegistrationFormStepThree() {
                 type="button"
                 onClick={handleFinish}
                 disabled={loading}
-                className="w-full md:w-auto px-12 py-3 bg-[#163D5C] text-white rounded-lg font-medium hover:bg-[#1a4d73] transition-all flex items-center justify-center min-w-[180px] disabled:opacity-70"
+                className="w-full md:w-auto px-12 py-3 bg-[#163D5C] text-white rounded-lg font-medium hover:bg-[#1a4d73] flex items-center justify-center min-w-[180px] disabled:opacity-70"
               >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Processing...
-                  </span>
-                ) : (
-                  "Finish Registration"
-                )}
+                {loading ? "Processing..." : "Finish & Verify"}
               </button>
             </div>
           </div>

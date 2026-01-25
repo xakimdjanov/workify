@@ -29,6 +29,12 @@ export const talentApi = {
     });
   },
 
+  sendVerifyCode: (email) => api.post("/talent/send-verify-code", { email }),
+  
+  checkVerifyCode: (email, code) => api.post("/talent/check-verify-code", { email, code }),
+  
+  confirmVerifyEmail: (data) => api.post("/talent/confirm-verify-email", data),
+
   login: (data) => api.post("/talent/login", data),
 
   getAll: () => api.get("/talent"),
