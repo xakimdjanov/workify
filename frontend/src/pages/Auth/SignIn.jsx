@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MdEmail } from "react-icons/md";
 import { IoMdLock } from "react-icons/io";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { talentApi } from "../../services/api"; 
 import Footer from "../Footer/Footer";
@@ -15,13 +15,13 @@ const SignIn = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false); // ✅ Yangi state
   const [errors, setErrors] = useState({
     email: false,
     password: false,
   });
   const navigate = useNavigate();
 
-  // FormData o'zgarganda xatoliklarni tozalash
   useEffect(() => {
     if (errors.email || errors.password) {
       setErrors({
@@ -74,6 +74,20 @@ const SignIn = () => {
       return;
     }
     
+    // Remember me checkbox tekshirish ✅
+    if (!rememberMe) {
+      toast.error("Iltimos, 'Remember me' qutisini belgilang", {
+        duration: 4000,
+        position: "top-right",
+        style: {
+          background: '#fef2f2',
+          color: '#991b1b',
+          border: '1px solid #fca5a5',
+        },
+      });
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -98,13 +112,11 @@ const SignIn = () => {
     } catch (error) {
       console.error("Login Error:", error);
       
-      // Xatolik paytida inputlarni qizil qilish
       setErrors({
         email: true,
         password: true,
       });
       
-      // Turli xil xatolik turlari uchun
       let errorMessage = "Email yoki parol noto'g'ri";
       
       if (error.response) {
@@ -141,10 +153,8 @@ const SignIn = () => {
 
   return (
     <>
-      {/* Hot Toast Toaster Component */}
       <Toaster
         toastOptions={{
-          // Global toast options
           duration: 4000,
           style: {
             fontSize: '14px',
@@ -214,7 +224,7 @@ const SignIn = () => {
               </div>
             </div>
 
-            <div className="mb-6">
+            <div className="mb-4">
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
@@ -247,11 +257,32 @@ const SignIn = () => {
               </div>
             </div>
 
+            <div className="flex justify-between pb-6">
+              <div className="flex items-center gap-1">
+                <input 
+                  type="checkbox" 
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="cursor-pointer"
+                />
+                <label 
+                  htmlFor="rememberMe" 
+                  className="text-sm cursor-pointer select-none"
+                >
+                  Remember me
+                </label>
+              </div>
+              <Link to="/forgotpass" className="text-sm cursor-pointer">Forgot Password?</Link>
+            </div>
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !rememberMe} // ✅ Disabled agar rememberMe false bo'lsa
               className={`w-full py-2 rounded-lg text-white font-semibold transition ${
-                loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#163D5C] hover:bg-[#0f2a40]"
+                loading || !rememberMe 
+                  ? "bg-gray-400 cursor-not-allowed" 
+                  : "bg-[#163D5C] hover:bg-[#0f2a40]"
               }`}
             >
               {loading ? (

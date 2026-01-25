@@ -15,6 +15,9 @@ import JobAlerts from "./components/JobAlerts/JobAlerts";
 import CompanyDetail from "./components/CompanyDetail/CompanyDetail";
 import Faq from "./pages/Faq/Faq";
 import Contact from "./pages/Contact/Contact";
+import ForgotPass from "./pages/ForgotPass/ForgotPass";
+import ResetPass from "./pages/ResetPass/ResetPass";
+import CheckPass from "./pages/CheckPass/CheckPass";
 
 // --- HIMOYALANGAN YO'LLAR UCHUN KOMPONENT ---
 const ProtectedRoute = () => {
@@ -44,6 +47,9 @@ function App() {
         path="/registration/step-3"
         element={<RegistrationFormStepThree />}
       />
+      <Route path="/forgotpass" element={<ForgotPass />} />
+      <Route path="/resetpass" element={<ResetPass />} />
+      <Route path="/checkpass" element={<CheckPass />} />
 
       {/* Himoyalangan sahifalar (Faqat login qilganlar uchun) */}
       <Route element={<ProtectedRoute />}>
